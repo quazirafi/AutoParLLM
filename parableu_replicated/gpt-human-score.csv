@@ -1,0 +1,3022 @@
+id,file_name,raw_code,actual_class,predicted_class,pragma_removed_code,gpt-3.5-turbo-GNN,gpt-3.5-turbo-NoGNN,actual_pragma,GNN-gen-pragma,gpt4-no-gnn-gen-pragma,human-gnn,human-no-gnn,note
+0,./Benchmark-Test-2/3/bt-9.ll,"#pragma rose_outline
+    for (i = 1; i <= grid_points[0] - 1 - 1; i += 1) {
+		#pragma rose_outline
+      for (k = 1; k <= grid_points[2] - 1 - 1; k += 1) {
+/*--------------------------------------------------------------------
+c     subtract A*lhs_vector(j-1) from lhs_vector(j)
+c     
+c     rhs(j) = rhs(j) - A*rhs(j-1)
+c-------------------------------------------------------------------*/
+        matvec_sub(lhs[i][j][k][0],rhs[i][j - 1][k],rhs[i][j][k]);
+/*--------------------------------------------------------------------
+c     B(j) = B(j) - C(j-1)*A(j)
+c-------------------------------------------------------------------*/
+        matmul_sub(lhs[i][j][k][0],lhs[i][j - 1][k][2],lhs[i][j][k][1]);
+/*--------------------------------------------------------------------
+c     multiply c(i,j,k) by b_inverse and copy back to c
+c     multiply rhs(i,1,k) by b_inverse(i,1,k) and copy to rhs
+c-------------------------------------------------------------------*/
+        binvcrhs(lhs[i][j][k][1],lhs[i][j][k][2],rhs[i][j][k]);
+      }
+    }",2,2,"
+    for (i = 1; i <= grid_points[0] - 1 - 1; i += 1) {
+      for (k = 1; k <= grid_points[2] - 1 - 1; k += 1) {
+/*--------------------------------------------------------------------
+c     subtract A*lhs_vector(j-1) from lhs_vector(j)
+c     
+c     rhs(j) = rhs(j) - A*rhs(j-1)
+c-------------------------------------------------------------------*/
+        matvec_sub(lhs[i][j][k][0],rhs[i][j - 1][k],rhs[i][j][k]);
+/*--------------------------------------------------------------------
+c     B(j) = B(j) - C(j-1)*A(j)
+c-------------------------------------------------------------------*/
+        matmul_sub(lhs[i][j][k][0],lhs[i][j - 1][k][2],lhs[i][j][k][1]);
+/*--------------------------------------------------------------------
+c     multiply c(i,j,k) by b_inverse and copy back to c
+c     multiply rhs(i,1,k) by b_inverse(i,1,k) and copy to rhs
+c-------------------------------------------------------------------*/
+        binvcrhs(lhs[i][j][k][1],lhs[i][j][k][2],rhs[i][j][k]);
+      }
+    }",,"#pragma omp parallel for private(i, k)
+    for (int i = 1; i <= grid_points[0] - 1 - 1; i += 1) {
+      for (int k = 1; k <= grid_points[2] - 1 - 1; k += 1) {
+ 
+        matvec_sub(lhs[i][j][k][0],rhs[i][j - 1][k],rhs[i][j][k]);
+ 
+        matmul_sub(lhs[i][j][k][0],lhs[i][j - 1][k][2],lhs[i][j][k][1]);
+ 
+        binvcrhs(lhs[i][j][k][1],lhs[i][j][k][2],rhs[i][j][k]);
+      }
+    }",none,none,#pragma omp parallel for collapse(2),5,0,
+1,./Benchmark-Test-2/3/is-3.ll,"#pragma rose_outline
+  for (i = 0; i <= 524286; i += 1) {
+    prv_buff1[i + 1] += prv_buff1[i];
+  }",2,0,"
+  for (i = 0; i <= 524286; i += 1) {
+    prv_buff1[i + 1] += prv_buff1[i];
+  }","#pragma omp parallel for private(i)
+  for (i = 0; i <= 524286; i += 1) {
+    prv_buff1[i + 1] += prv_buff1[i];
+  }","#pragma omp parallel for
+  for (i = 0; i <= 524286; i += 1) {
+    prv_buff1[i + 1] += prv_buff1[i];
+  }",none,#pragma omp parallel for private(i),none,0,5,
+2,./Benchmark-Test-2/0/sp-20.ll,"//#pragma omp parallel for private (i,k)
+         #pragma rose_outline 
+		for (i = 1; i <= grid_points[0] - 2; i += 1) {
+          
+#pragma omp parallel for private (k) firstprivate (n,j1,j2)
+          for (k = 1; k <= grid_points[2] - 2; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j1][k] - lhs[n + 4][i][j][k] * rhs[m][i][j2][k];
+          }
+        }",0,0,"		for (i = 1; i <= grid_points[0] - 2; i += 1) {
+          
+
+          for (k = 1; k <= grid_points[2] - 2; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j1][k] - lhs[n + 4][i][j][k] * rhs[m][i][j2][k];
+          }
+        }","#pragma omp parallel for private(i, k)
+for (i = 1; i <= grid_points[0] - 2; i += 1) {
+    for (k = 1; k <= grid_points[2] - 2; k += 1) {
+        rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j1][k] - lhs[n + 4][i][j][k] * rhs[m][i][j2][k];
+    }
+}","#pragma omp parallel for private(i, k)
+for (i = 1; i <= grid_points[0] - 2; i += 1) {
+  for (k = 1; k <= grid_points[2] - 2; k += 1) {
+    rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j1][k] - lhs[n + 4][i][j][k] * rhs[m][i][j2][k];
+  }
+}","#pragma omp parallel for private (i,k)","#pragma omp parallel for private(i, k)",#pragma omp parallel for collapse(2),5,2,
+3,./Benchmark-Test-2/0/sp-63.ll,"//#pragma omp parallel for private (t1,t2,t3,ac,ru1,uu,vv,ww,r1,r2,r3,r4,r5,ac2inv,i,j,k)
+   #pragma rose_outline 
+  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+    
+//#pragma omp parallel for private (t1,t2,t3,ac,ru1,uu,vv,ww,r1,r2,r3,r4,r5,ac2inv,j,k)
+ #pragma rose_outline   
+  for (j = 1; j <= grid_points[1] - 2; j += 1) {
+      
+#pragma omp parallel for private (t1,t2,t3,ac,ru1,uu,vv,ww,r1,r2,r3,r4,r5,ac2inv,k) firstprivate (c2,bt)
+      for (k = 1; k <= grid_points[2] - 2; k += 1) {
+        ru1 = rho_i[i][j][k];
+        uu = us[i][j][k];
+        vv = vs[i][j][k];
+        ww = ws[i][j][k];
+        ac = speed[i][j][k];
+        ac2inv = ainv[i][j][k] * ainv[i][j][k];
+        r1 = rhs[0][i][j][k];
+        r2 = rhs[1][i][j][k];
+        r3 = rhs[2][i][j][k];
+        r4 = rhs[3][i][j][k];
+        r5 = rhs[4][i][j][k];
+        t1 = c2 * ac2inv * (qs[i][j][k] * r1 - uu * r2 - vv * r3 - ww * r4 + r5);
+        t2 = bt * ru1 * (uu * r1 - r2);
+        t3 = bt * ru1 * ac * t1;
+        rhs[0][i][j][k] = r1 - t1;
+        rhs[1][i][j][k] = -ru1 * (ww * r1 - r4);
+        rhs[2][i][j][k] = ru1 * (vv * r1 - r3);
+        rhs[3][i][j][k] = -t2 + t3;
+        rhs[4][i][j][k] = t2 + t3;
+      }
+    }
+  }",0,0,"  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+  for (j = 1; j <= grid_points[1] - 2; j += 1) {
+            for (k = 1; k <= grid_points[2] - 2; k += 1) {
+        ru1 = rho_i[i][j][k];
+        uu = us[i][j][k];
+        vv = vs[i][j][k];
+        ww = ws[i][j][k];
+        ac = speed[i][j][k];
+        ac2inv = ainv[i][j][k] * ainv[i][j][k];
+        r1 = rhs[0][i][j][k];
+        r2 = rhs[1][i][j][k];
+        r3 = rhs[2][i][j][k];
+        r4 = rhs[3][i][j][k];
+        r5 = rhs[4][i][j][k];
+        t1 = c2 * ac2inv * (qs[i][j][k] * r1 - uu * r2 - vv * r3 - ww * r4 + r5);
+        t2 = bt * ru1 * (uu * r1 - r2);
+        t3 = bt * ru1 * ac * t1;
+        rhs[0][i][j][k] = r1 - t1;
+        rhs[1][i][j][k] = -ru1 * (ww * r1 - r4);
+        rhs[2][i][j][k] = ru1 * (vv * r1 - r3);
+        rhs[3][i][j][k] = -t2 + t3;
+        rhs[4][i][j][k] = t2 + t3;
+      }
+    }
+  }","#pragma omp parallel for private(i, j, k, ru1, uu, vv, ww, ac, ac2inv, r1, r2, r3, r4, r5, t1, t2, t3)
+for (i = 1; i <= grid_points[0] - 2; i += 1) {
+  for (j = 1; j <= grid_points[1] - 2; j += 1) {
+    for (k = 1; k <= grid_points[2] - 2; k += 1) {
+      ru1 = rho_i[i][j][k];
+      uu = us[i][j][k];
+      vv = vs[i][j][k];
+      ww = ws[i][j][k];
+      ac = speed[i][j][k];
+      ac2inv = ainv[i][j][k] * ainv[i][j][k];
+      r1 = rhs[0][i][j][k];
+      r2 = rhs[1][i][j][k];
+      r3 = rhs[2][i][j][k];
+      r4 = rhs[3][i][j][k];
+      r5 = rhs[4][i][j][k];
+      t1 = c2 * ac2inv * (qs[i][j][k] * r1 - uu * r2 - vv * r3 - ww * r4 + r5);
+      t2 = bt * ru1 * (uu * r1 - r2);
+      t3 = bt * ru1 * ac * t1;
+      rhs[0][i][j][k] = r1 - t1;
+      rhs[1][i][j][k] = -ru1 * (ww * r1 - r4);
+      rhs[2][i][j][k] = ru1 * (vv * r1 - r3);
+      rhs[3][i][j][k] = -t2 + t3;
+      rhs[4][i][j][k] = t2 + t3;
+    }
+  }
+}","#pragma omp parallel for private(i, j, k, ru1, uu, vv, ww, ac, ac2inv, r1, r2, r3, r4, r5, t1, t2, t3)
+for (i = 1; i <= grid_points[0] - 2; i += 1) {
+  for (j = 1; j <= grid_points[1] - 2; j += 1) {
+    for (k = 1; k <= grid_points[2] - 2; k += 1) {
+      ru1 = rho_i[i][j][k];
+      uu = us[i][j][k];
+      vv = vs[i][j][k];
+      ww = ws[i][j][k];
+      ac = speed[i][j][k];
+      ac2inv = ainv[i][j][k] * ainv[i][j][k];
+      r1 = rhs[0][i][j][k];
+      r2 = rhs[1][i][j][k];
+      r3 = rhs[2][i][j][k];
+      r4 = rhs[3][i][j][k];
+      r5 = rhs[4][i][j][k];
+      t1 = c2 * ac2inv * (qs[i][j][k] * r1 - uu * r2 - vv * r3 - ww * r4 + r5);
+      t2 = bt * ru1 * (uu * r1 - r2);
+      t3 = bt * ru1 * ac * t1;
+      rhs[0][i][j][k] = r1 - t1;
+      rhs[1][i][j][k] = -ru1 * (ww * r1 - r4);
+      rhs[2][i][j][k] = ru1 * (vv * r1 - r3);
+      rhs[3][i][j][k] = -t2 + t3;
+      rhs[4][i][j][k] = t2 + t3;
+    }
+  }
+}","#pragma omp parallel for private (t1,t2,t3,ac,ru1,uu,vv,ww,r1,r2,r3,r4,r5,ac2inv,k)","#pragma omp parallel for private(i, j, k, ru1, uu, vv, ww, ac, ac2inv, r1, r2, r3, r4, r5, t1, t2, t3)","#pragma omp parallel for collapse(3) private(i, j, k, ru1, uu, vv, ww, ac, ac2inv, r1, r2, r3, r4, r5, t1, t2, t3)",4,4,order + both predict 17 vs exp 15 vars
+4,./Benchmark-Test-2/0/lu-79.ll,"//#pragma omp parallel for private (m)
+          #pragma rose_outline
+		  for (m = 0; m <= 4; m += 1) {
+            frct[i][j][k][m] = frct[i][j][k][m] - dsspm * (rsd[i][j - 2][k][m] - 4.0 * rsd[i][j - 1][k][m] + 6.0 * rsd[i][j][k][m] - 4.0 * rsd[i][j + 1][k][m] + rsd[i][j + 2][k][m]);
+          }",0,0,"		  for (m = 0; m <= 4; m += 1) {
+            frct[i][j][k][m] = frct[i][j][k][m] - dsspm * (rsd[i][j - 2][k][m] - 4.0 * rsd[i][j - 1][k][m] + 6.0 * rsd[i][j][k][m] - 4.0 * rsd[i][j + 1][k][m] + rsd[i][j + 2][k][m]);
+          }","#pragma omp parallel for private(m)
+for (m = 0; m <= 4; m += 1) {
+    frct[i][j][k][m] = frct[i][j][k][m] - dsspm * (rsd[i][j - 2][k][m] - 4.0 * rsd[i][j - 1][k][m] + 6.0 * rsd[i][j][k][m] - 4.0 * rsd[i][j + 1][k][m] + rsd[i][j + 2][k][m]);
+}","#pragma omp parallel for
+for (m = 0; m <= 4; m += 1) {
+  frct[i][j][k][m] = frct[i][j][k][m] - dsspm * (rsd[i][j - 2][k][m] - 4.0 * rsd[i][j - 1][k][m] + 6.0 * rsd[i][j][k][m] - 4.0 * rsd[i][j + 1][k][m] + rsd[i][j + 2][k][m]);
+}",#pragma omp parallel for private (m),#pragma omp parallel for private(m),#pragma omp parallel for private(m),5,5,
+5,./Benchmark-Test-2/3/sp-139.ll,"       #pragma rose_outline 
+	  for (k = 0; k <= grid_points[2] - 1; k += 1) {
+        zeta = ((double )k) * dnzm1;
+         #pragma rose_outline 
+		for (ix = 0; ix <= 1; ix += 1) {
+          exact_solution((double )ix,eta,zeta,&Pface[ix][0][0]);
+        }
+         #pragma rose_outline 
+		for (iy = 0; iy <= 1; iy += 1) {
+          exact_solution(xi,(double )iy,zeta,&Pface[iy][1][0]);
+        }
+         #pragma rose_outline 
+		for (iz = 0; iz <= 1; iz += 1) {
+          exact_solution(xi,eta,(double )iz,&Pface[iz][2][0]);
+        }
+        
+#pragma omp parallel for private (Pxi,Peta,Pzeta,m) firstprivate (xi,eta,zeta)
+        for (m = 0; m <= 4; m += 1) {
+          Pxi = xi * Pface[1][0][m] + (1.0 - xi) * Pface[0][0][m];
+          Peta = eta * Pface[1][1][m] + (1.0 - eta) * Pface[0][1][m];
+          Pzeta = zeta * Pface[1][2][m] + (1.0 - zeta) * Pface[0][2][m];
+          u[m][i][j][k] = Pxi + Peta + Pzeta - Pxi * Peta - Pxi * Pzeta - Peta * Pzeta + Pxi * Peta * Pzeta;
+        }
+      }",2,2,"
+	  for (k = 0; k <= grid_points[2] - 1; k += 1) {
+        zeta = ((double )k) * dnzm1;
+         
+		for (ix = 0; ix <= 1; ix += 1) {
+          exact_solution((double )ix,eta,zeta,&Pface[ix][0][0]);
+        }
+		for (iy = 0; iy <= 1; iy += 1) {
+          exact_solution(xi,(double )iy,zeta,&Pface[iy][1][0]);
+        }
+    
+		for (iz = 0; iz <= 1; iz += 1) {
+          exact_solution(xi,eta,(double )iz,&Pface[iz][2][0]);
+        }
+        
+        for (m = 0; m <= 4; m += 1) {
+          Pxi = xi * Pface[1][0][m] + (1.0 - xi) * Pface[0][0][m];
+          Peta = eta * Pface[1][1][m] + (1.0 - eta) * Pface[0][1][m];
+          Pzeta = zeta * Pface[1][2][m] + (1.0 - zeta) * Pface[0][2][m];
+          u[m][i][j][k] = Pxi + Peta + Pzeta - Pxi * Peta - Pxi * Pzeta - Peta * Pzeta + Pxi * Peta * Pzeta;
+        }
+      }",,"#pragma omp parallel for private(k, zeta, ix, iy, iz, m, Pxi, Peta, Pzeta)
+for (k = 0; k <= grid_points[2] - 1; k += 1) {
+    zeta = ((double)k) * dnzm1;
+
+    for (ix = 0; ix <= 1; ix += 1) {
+        exact_solution((double)ix, eta, zeta, &Pface[ix][0][0]);
+    }
+    for (iy = 0; iy <= 1; iy += 1) {
+        exact_solution(xi, (double)iy, zeta, &Pface[iy][1][0]);
+    }
+
+    for (iz = 0; iz <= 1; iz += 1) {
+        exact_solution(xi, eta, (double)iz, &Pface[iz][2][0]);
+    }
+
+    for (m = 0; m <= 4; m += 1) {
+        Pxi = xi * Pface[1][0][m] + (1.0 - xi) * Pface[0][0][m];
+        Peta = eta * Pface[1][1][m] + (1.0 - eta) * Pface[0][1][m];
+        Pzeta = zeta * Pface[1][2][m] + (1.0 - zeta) * Pface[0][2][m];
+        u[m][i][j][k] = Pxi + Peta + Pzeta - Pxi * Peta - Pxi * Pzeta - Peta * Pzeta + Pxi * Peta * Pzeta;
+    }
+}",none,none,"#pragma omp parallel for private(zeta, ix, iy, iz, m, Pxi, Peta, Pzeta)",5,0,
+6,./Benchmark-Test-2/0/sp-119.ll,"//#pragma omp parallel for private (i,j,k,n)
+ #pragma rose_outline 
+  for (n = 0; n <= 2; n += 1) {
+    
+//#pragma omp parallel for private (i,j,k)
+ #pragma rose_outline 
+    for (i = 0; i <= grid_points[0] - 1; i += 1) {
+      
+//#pragma omp parallel for private (j,k)
+ #pragma rose_outline 
+      for (j = 0; j <= grid_points[1] - 1; j += 1) {
+        
+//#pragma omp parallel for private (k)
+ #pragma rose_outline 
+        for (k = 0; k <= grid_points[2] - 1; k += 1) {
+          lhs[5 * n + 2][i][j][k] = 1.0;
+        }
+      }
+    }
+  }",0,0," 
+  for (n = 0; n <= 2; n += 1) {
+    
+ 
+    for (i = 0; i <= grid_points[0] - 1; i += 1) {
+      
+      for (j = 0; j <= grid_points[1] - 1; j += 1) {
+        
+        for (k = 0; k <= grid_points[2] - 1; k += 1) {
+          lhs[5 * n + 2][i][j][k] = 1.0;
+        }
+      }
+    }
+  }","#pragma omp parallel for private(n, i, j, k)
+  for (n = 0; n <= 2; n += 1) {
+    
+    for (i = 0; i <= grid_points[0] - 1; i += 1) {
+      
+      for (j = 0; j <= grid_points[1] - 1; j += 1) {
+        
+        for (k = 0; k <= grid_points[2] - 1; k += 1) {
+          lhs[5 * n + 2][i][j][k] = 1.0;
+        }
+      }
+    }
+  }","#pragma omp parallel for
+  for (n = 0; n <= 2; n += 1) {
+    
+ 
+    for (i = 0; i <= grid_points[0] - 1; i += 1) {
+      
+      for (j = 0; j <= grid_points[1] - 1; j += 1) {
+        
+        for (k = 0; k <= grid_points[2] - 1; k += 1) {
+          lhs[5 * n + 2][i][j][k] = 1.0;
+        }
+      }
+    }
+  }","#pragma omp parallel for private (i,j,k,n)","#pragma omp parallel for private(n, i, j, k)",#pragma omp parallel for collapse(4),5,2,semantic
+7,./Benchmark-Test-2/3/lu-70.ll,"	#pragma rose_outline
+    for (j = jst; j <= jend; j += 1) {
+      jglob = j;
+	  #pragma rose_outline
+      for (k = 1; k <= nz - 2; k += 1) {
+        exact(iglob,jglob,k,u000ijk);
+        
+//#pragma omp parallel for private (tmp,m)
+#pragma rose_outline
+        for (m = 0; m <= 4; m += 1) {
+          tmp = u000ijk[m] - u[i][j][k][m];
+          errnm[m] = errnm[m] + tmp * tmp;
+        }
+      }
+    }",2,2,"
+    for (j = jst; j <= jend; j += 1) {
+      jglob = j;
+
+      for (k = 1; k <= nz - 2; k += 1) {
+        exact(iglob,jglob,k,u000ijk);
+        
+        for (m = 0; m <= 4; m += 1) {
+          tmp = u000ijk[m] - u[i][j][k][m];
+          errnm[m] = errnm[m] + tmp * tmp;
+        }
+      }
+    }",,"#pragma omp parallel for private(jglob, tmp) reduction(+:errnm)
+    for (j = jst; j <= jend; j += 1) {
+      jglob = j;
+
+      for (k = 1; k <= nz - 2; k += 1) {
+        exact(iglob,jglob,k,u000ijk);
+        
+        for (m = 0; m <= 4; m += 1) {
+          tmp = u000ijk[m] - u[i][j][k][m];
+          errnm[m] = errnm[m] + tmp * tmp;
+        }
+      }
+    }",none,none,"#pragma omp parallel for private(jglob, k, m, tmp)",5,0,
+8,./Benchmark-Test-2/3/ft-22.ll,"		#pragma rose_outline
+      for (i = 0; i <= 255; i += 1) {
+        u0[k][j][i] . real = tmp[t++];
+        u0[k][j][i] . imag = tmp[t++];
+      }",2,2,"		
+      for (i = 0; i <= 255; i += 1) {
+        u0[k][j][i] . real = tmp[t++];
+        u0[k][j][i] . imag = tmp[t++];
+      }",,"#pragma omp parallel for
+for (i = 0; i <= 255; i += 1) {
+  u0[k][j][i].real = tmp[t++];
+  u0[k][j][i].imag = tmp[t++];
+}",none,none,#pragma omp parallel for,5,1,
+9,./Benchmark-Test-2/3/sp-41.ll,"	 #pragma rose_outline 
+    for (i = grid_points[0] - 3; i >= 0; i += -1) {
+      i1 = i + 1;
+      i2 = i + 2;
+      
+//#pragma omp parallel for private (j,k,m)
+ #pragma rose_outline 
+      for (m = 0; m <= 2; m += 1) {
+        
+//#pragma omp parallel for private (j,k)
+ #pragma rose_outline 
+        for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          
+#pragma omp parallel for private (k) firstprivate (n,i1,i2)
+          for (k = 1; k <= grid_points[2] - 2; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i1][j][k] - lhs[n + 4][i][j][k] * rhs[m][i2][j][k];
+          }
+        }
+      }
+    }",2,2,"	 
+    for (i = grid_points[0] - 3; i >= 0; i += -1) {
+      i1 = i + 1;
+      i2 = i + 2;
+      
+      for (m = 0; m <= 2; m += 1) {
+        
+        for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          
+
+          for (k = 1; k <= grid_points[2] - 2; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i1][j][k] - lhs[n + 4][i][j][k] * rhs[m][i2][j][k];
+          }
+        }
+      }
+    }",,"#pragma omp parallel for private(i1, i2, m, j, k) 
+    for (i = grid_points[0] - 3; i >= 0; i += -1) {
+      i1 = i + 1;
+      i2 = i + 2;
+      
+      for (m = 0; m <= 2; m += 1) {
+        
+        for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          
+
+          for (k = 1; k <= grid_points[2] - 2; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i1][j][k] - lhs[n + 4][i][j][k] * rhs[m][i2][j][k];
+          }
+        }
+      }
+    }",none,none,"#pragma omp parallel for collapse(4) private(i1, i2)",5,0,
+10,./Benchmark-Test-2/0/sp-58.ll,"//#pragma omp parallel for private (m)
+ #pragma rose_outline 
+  for (m = 0; m <= 4; m += 1) {
+    xcrref[m] = 1.0;
+    xceref[m] = 1.0;
+  }",0,0,"  for (m = 0; m <= 4; m += 1) {
+    xcrref[m] = 1.0;
+    xceref[m] = 1.0;
+  }","#pragma omp parallel for private(m)
+  for (m = 0; m <= 4; m += 1) {
+    xcrref[m] = 1.0;
+    xceref[m] = 1.0;
+  }","#pragma omp parallel for
+  for (m = 0; m <= 4; m += 1) {
+    xcrref[m] = 1.0;
+    xceref[m] = 1.0;
+  }",#pragma omp parallel for private (m),#pragma omp parallel for private(m),#pragma omp parallel for,5,2,
+11,./Benchmark-Test-2/3/lu-2.ll,"  #pragma rose_outline
+  for (m = 0; m <= 4; m += 1) {
+    if (( *class) == 'U') {
+      printf(""          %2d  %20.13e\n"",m,xcr[m]);
+    }
+     else if (xcrdif[m] > epsilon) {
+       *verified = 0;
+      printf("" FAILURE: %2d  %20.13e%20.13e%20.13e\n"",m,xcr[m],xcrref[m],xcrdif[m]);
+    }
+     else {
+      printf(""          %2d  %20.13e%20.13e%20.13e\n"",m,xcr[m],xcrref[m],xcrdif[m]);
+    }
+  }",2,2,"
+  for (m = 0; m <= 4; m += 1) {
+    if (( *class) == 'U') {
+      printf(""          %2d  %20.13e\n"",m,xcr[m]);
+    }
+     else if (xcrdif[m] > epsilon) {
+       *verified = 0;
+      printf("" FAILURE: %2d  %20.13e%20.13e%20.13e\n"",m,xcr[m],xcrref[m],xcrdif[m]);
+    }
+     else {
+      printf(""          %2d  %20.13e%20.13e%20.13e\n"",m,xcr[m],xcrref[m],xcrdif[m]);
+    }
+  }",,"#pragma omp parallel for
+  for (m = 0; m <= 4; m += 1) {
+    if ((*class) == 'U') {
+      printf(""          %2d  %20.13e\n"", m, xcr[m]);
+    }
+    else if (xcrdif[m] > epsilon) {
+      *verified = 0;
+      printf("" FAILURE: %2d  %20.13e%20.13e%20.13e\n"", m, xcr[m], xcrref[m], xcrdif[m]);
+    }
+    else {
+      printf(""          %2d  %20.13e%20.13e%20.13e\n"", m, xcr[m], xcrref[m], xcrdif[m]);
+    }
+  }",none,none,none,5,5,
+12,./Benchmark-Test-2/0/mg-6.ll,"//#pragma omp parallel for private (i1)
+#pragma rose_outline
+      for (i1 = 0; i1 <= n1 - 1; i1 += 1) {
+        z[i3][i2][i1] = 0.0;
+      }",0,2,"      for (i1 = 0; i1 <= n1 - 1; i1 += 1) {
+        z[i3][i2][i1] = 0.0;
+      }",,"#pragma omp parallel for
+      for (i1 = 0; i1 <= n1 - 1; i1 += 1) {
+        z[i3][i2][i1] = 0.0;
+      }",#pragma omp parallel for private (i1),none,#pragma omp parallel for,0,3,
+13,./Benchmark-Test-2/0/lu-11.ll,"//#pragma omp parallel for private (i,j,k,m)
+      #pragma rose_outline
+	  for (i = ist; i <= iend; i += 1) {
+        
+//#pragma omp parallel for private (j,k,m)
+        #pragma rose_outline
+		for (j = jst; j <= jend; j += 1) {
+          
+//#pragma omp parallel for private (k,m)
+          #pragma rose_outline
+		  for (k = 1; k <= nz - 2; k += 1) {
+            
+#pragma omp parallel for private (m) firstprivate (dt)
+            for (m = 0; m <= 4; m += 1) {
+              rsd[i][j][k][m] = dt * rsd[i][j][k][m];
+            }
+          }
+        }
+      }",0,0,"	  for (i = ist; i <= iend; i += 1) {
+        
+		for (j = jst; j <= jend; j += 1) {
+          
+		  for (k = 1; k <= nz - 2; k += 1) {
+            
+
+            for (m = 0; m <= 4; m += 1) {
+              rsd[i][j][k][m] = dt * rsd[i][j][k][m];
+            }
+          }
+        }
+      }","#pragma omp parallel for private(i, j, k, m)
+for (i = ist; i <= iend; i += 1) {
+    for (j = jst; j <= jend; j += 1) {
+        for (k = 1; k <= nz - 2; k += 1) {
+            for (m = 0; m <= 4; m += 1) {
+                rsd[i][j][k][m] = dt * rsd[i][j][k][m];
+            }
+        }
+    }
+}","#pragma omp parallel for private(i, j, k, m) 
+for (i = ist; i <= iend; i += 1) {
+  for (j = jst; j <= jend; j += 1) {
+    for (k = 1; k <= nz - 2; k += 1) {
+      for (m = 0; m <= 4; m += 1) {
+        rsd[i][j][k][m] = dt * rsd[i][j][k][m];
+      }
+    }
+  }
+}","#pragma omp parallel for private (i,j,k,m)","#pragma omp parallel for private(i, j, k, m)","#pragma omp parallel for collapse(4) private(i, j, k, m)",5,4,
+14,./Benchmark-Test-2/0/bt-21.ll,"//#pragma omp parallel for private (i)
+#pragma rose_outline  
+  for (i = 1 * 3; i <= grid_points[0] - 3 - 1; i += 1) {
+            forcing[i][j][k][m] = forcing[i][j][k][m] - dssp * (ue[i - 2][m] - 4.0 * ue[i - 1][m] + 6.0 * ue[i][m] - 4.0 * ue[i + 1][m] + ue[i + 2][m]);
+          }",0,0,"  for (i = 1 * 3; i <= grid_points[0] - 3 - 1; i += 1) {
+            forcing[i][j][k][m] = forcing[i][j][k][m] - dssp * (ue[i - 2][m] - 4.0 * ue[i - 1][m] + 6.0 * ue[i][m] - 4.0 * ue[i + 1][m] + ue[i + 2][m]);
+          }","#pragma omp parallel for private(i,j,k,m)
+for (i = 1 * 3; i <= grid_points[0] - 3 - 1; i += 1) {
+    forcing[i][j][k][m] = forcing[i][j][k][m] - dssp * (ue[i - 2][m] - 4.0 * ue[i - 1][m] + 6.0 * ue[i][m] - 4.0 * ue[i + 1][m] + ue[i + 2][m]);
+}","#pragma omp parallel for
+for (i = 1 * 3; i <= grid_points[0] - 3 - 1; i += 1) {
+    forcing[i][j][k][m] = forcing[i][j][k][m] - dssp * (ue[i - 2][m] - 4.0 * ue[i - 1][m] + 6.0 * ue[i][m] - 4.0 * ue[i + 1][m] + ue[i + 2][m]);
+}",#pragma omp parallel for private (i),"#pragma omp parallel for private(i,j,k,m)",#pragma omp parallel for,3,2,
+15,./Benchmark-Test-2/3/ft-24.ll,"  #pragma rose_outline
+  for (k = 0; k <= dims[0][2] - 1; k += 1) {
+    x0 = start;
+    vranlc(2 * 256 * dims[0][1],&x0,1220703125.0,tmp);
+    t = 1;
+	#pragma rose_outline
+    for (j = 0; j <= dims[0][1] - 1; j += 1) {
+		#pragma rose_outline
+      for (i = 0; i <= 255; i += 1) {
+        u0[k][j][i] . real = tmp[t++];
+        u0[k][j][i] . imag = tmp[t++];
+      }
+    }
+    if (k != dims[0][2]) 
+      dummy = randlc(&start,an);
+  }",2,2,"
+  for (k = 0; k <= dims[0][2] - 1; k += 1) {
+    x0 = start;
+    vranlc(2 * 256 * dims[0][1],&x0,1220703125.0,tmp);
+    t = 1;
+
+    for (j = 0; j <= dims[0][1] - 1; j += 1) {
+		
+      for (i = 0; i <= 255; i += 1) {
+        u0[k][j][i] . real = tmp[t++];
+        u0[k][j][i] . imag = tmp[t++];
+      }
+    }
+    if (k != dims[0][2]) 
+      dummy = randlc(&start,an);
+  }",,"#pragma omp parallel for
+  for (k = 0; k <= dims[0][2] - 1; k += 1) {
+    x0 = start;
+    vranlc(2 * 256 * dims[0][1],&x0,1220703125.0,tmp);
+    t = 1;
+
+    for (j = 0; j <= dims[0][1] - 1; j += 1) {
+		
+      for (i = 0; i <= 255; i += 1) {
+        u0[k][j][i] . real = tmp[t++];
+        u0[k][j][i] . imag = tmp[t++];
+      }
+    }
+    if (k != dims[0][2]) 
+      dummy = randlc(&start,an);
+  }",none,none,"#pragma omp parallel for private(x0, t, j, i)",5,0,
+16,./Benchmark-Test-2/0/sp-9.ll,"//#pragma omp parallel for private (i,j)
+       #pragma rose_outline 
+	  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+        
+#pragma omp parallel for private (j) firstprivate (k,n,k1)
+        for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1];
+        }
+      }",0,0,"	  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+        
+
+        for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1];
+        }
+      }","#pragma omp parallel for private(i, j)
+for (i = 1; i <= grid_points[0] - 2; i += 1) {
+    for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1];
+    }
+}","#pragma omp parallel for private(i, j) shared(rhs, lhs)
+for (i = 1; i <= grid_points[0] - 2; i += 1) {
+  for (j = 1; j <= grid_points[1] - 2; j += 1) {
+    rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1];
+  }
+}","#pragma omp parallel for private (i,j)","#pragma omp parallel for private(i, j)","#pragma omp parallel for collapse(2) private(i, j)",5,4,
+17,./Benchmark-Test-2/3/mg-41.ll,"#pragma rose_outline
+    for (i3 = 0; i3 <= mm3 - 1 - 1; i3 += 1) {
+		#pragma rose_outline
+      for (i2 = 0; i2 <= mm2 - 1 - 1; i2 += 1) {
+		  #pragma rose_outline
+        for (i1 = 0; i1 <= mm1 - 1; i1 += 1) {
+          z1[i1] = z[i3][i2 + 1][i1] + z[i3][i2][i1];
+          z2[i1] = z[i3 + 1][i2][i1] + z[i3][i2][i1];
+          z3[i1] = z[i3 + 1][i2 + 1][i1] + z[i3 + 1][i2][i1] + z1[i1];
+        }
+		#pragma rose_outline
+        for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+          u[2 * i3][2 * i2][2 * i1] = u[2 * i3][2 * i2][2 * i1] + z[i3][i2][i1];
+          u[2 * i3][2 * i2][2 * i1 + 1] = u[2 * i3][2 * i2][2 * i1 + 1] + 0.5 * (z[i3][i2][i1 + 1] + z[i3][i2][i1]);
+        }
+		#pragma rose_outline
+        for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+          u[2 * i3][2 * i2 + 1][2 * i1] = u[2 * i3][2 * i2 + 1][2 * i1] + 0.5 * z1[i1];
+          u[2 * i3][2 * i2 + 1][2 * i1 + 1] = u[2 * i3][2 * i2 + 1][2 * i1 + 1] + 0.25 * (z1[i1] + z1[i1 + 1]);
+        }
+		#pragma rose_outline
+        for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+          u[2 * i3 + 1][2 * i2][2 * i1] = u[2 * i3 + 1][2 * i2][2 * i1] + 0.5 * z2[i1];
+          u[2 * i3 + 1][2 * i2][2 * i1 + 1] = u[2 * i3 + 1][2 * i2][2 * i1 + 1] + 0.25 * (z2[i1] + z2[i1 + 1]);
+        }
+		#pragma rose_outline
+        for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+          u[2 * i3 + 1][2 * i2 + 1][2 * i1] = u[2 * i3 + 1][2 * i2 + 1][2 * i1] + 0.25 * z3[i1];
+          u[2 * i3 + 1][2 * i2 + 1][2 * i1 + 1] = u[2 * i3 + 1][2 * i2 + 1][2 * i1 + 1] + 0.125 * (z3[i1] + z3[i1 + 1]);
+        }
+      }
+    }",2,2,"
+    for (i3 = 0; i3 <= mm3 - 1 - 1; i3 += 1) {
+		
+      for (i2 = 0; i2 <= mm2 - 1 - 1; i2 += 1) {
+		
+        for (i1 = 0; i1 <= mm1 - 1; i1 += 1) {
+          z1[i1] = z[i3][i2 + 1][i1] + z[i3][i2][i1];
+          z2[i1] = z[i3 + 1][i2][i1] + z[i3][i2][i1];
+          z3[i1] = z[i3 + 1][i2 + 1][i1] + z[i3 + 1][i2][i1] + z1[i1];
+        }
+	
+        for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+          u[2 * i3][2 * i2][2 * i1] = u[2 * i3][2 * i2][2 * i1] + z[i3][i2][i1];
+          u[2 * i3][2 * i2][2 * i1 + 1] = u[2 * i3][2 * i2][2 * i1 + 1] + 0.5 * (z[i3][i2][i1 + 1] + z[i3][i2][i1]);
+        }
+		
+        for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+          u[2 * i3][2 * i2 + 1][2 * i1] = u[2 * i3][2 * i2 + 1][2 * i1] + 0.5 * z1[i1];
+          u[2 * i3][2 * i2 + 1][2 * i1 + 1] = u[2 * i3][2 * i2 + 1][2 * i1 + 1] + 0.25 * (z1[i1] + z1[i1 + 1]);
+        }
+		
+        for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+          u[2 * i3 + 1][2 * i2][2 * i1] = u[2 * i3 + 1][2 * i2][2 * i1] + 0.5 * z2[i1];
+          u[2 * i3 + 1][2 * i2][2 * i1 + 1] = u[2 * i3 + 1][2 * i2][2 * i1 + 1] + 0.25 * (z2[i1] + z2[i1 + 1]);
+        }
+		
+        for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+          u[2 * i3 + 1][2 * i2 + 1][2 * i1] = u[2 * i3 + 1][2 * i2 + 1][2 * i1] + 0.25 * z3[i1];
+          u[2 * i3 + 1][2 * i2 + 1][2 * i1 + 1] = u[2 * i3 + 1][2 * i2 + 1][2 * i1 + 1] + 0.125 * (z3[i1] + z3[i1 + 1]);
+        }
+      }
+    }",,"#pragma omp parallel for private(i3, i2, i1) 
+    for (i3 = 0; i3 <= mm3 - 1 - 1; i3 += 1) {
+      for (i2 = 0; i2 <= mm2 - 1 - 1; i2 += 1) {
+        for (i1 = 0; i1 <= mm1 - 1; i1 += 1) {
+          z1[i1] = z[i3][i2 + 1][i1] + z[i3][i2][i1];
+          z2[i1] = z[i3 + 1][i2][i1] + z[i3][i2][i1];
+          z3[i1] = z[i3 + 1][i2 + 1][i1] + z[i3 + 1][i2][i1] + z1[i1];
+        }
+        for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+          u[2 * i3][2 * i2][2 * i1] = u[2 * i3][2 * i2][2 * i1] + z[i3][i2][i1];
+          u[2 * i3][2 * i2][2 * i1 + 1] = u[2 * i3][2 * i2][2 * i1 + 1] + 0.5 * (z[i3][i2][i1 + 1] + z[i3][i2][i1]);
+        }
+        for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+          u[2 * i3][2 * i2 + 1][2 * i1] = u[2 * i3][2 * i2 + 1][2 * i1] + 0.5 * z1[i1];
+          u[2 * i3][2 * i2 + 1][2 * i1 + 1] = u[2 * i3][2 * i2 + 1][2 * i1 + 1] + 0.25 * (z1[i1] + z1[i1 + 1]);
+        }
+        for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+          u[2 * i3 + 1][2 * i2][2 * i1] = u[2 * i3 + 1][2 * i2][2 * i1] + 0.5 * z2[i1];
+          u[2 * i3 + 1][2 * i2][2 * i1 + 1] = u[2 * i3 + 1][2 * i2][2 * i1 + 1] + 0.25 * (z2[i1] + z2[i1 + 1]);
+        }
+        for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+          u[2 * i3 + 1][2 * i2 + 1][2 * i1] = u[2 * i3 + 1][2 * i2 + 1][2 * i1] + 0.25 * z3[i1];
+          u[2 * i3 + 1][2 * i2 + 1][2 * i1 + 1] = u[2 * i3 + 1][2 * i2 + 1][2 * i1 + 1] + 0.125 * (z3[i1] + z3[i1 + 1]);
+        }
+      }
+    }",none,none,"#pragma omp parallel for collapse(3) private(i1, i2, i3)",5,0,
+18,./Benchmark-Test-2/0/sp-38.ll,"//#pragma omp parallel for private (n,i1,i2,i,j,k,m)
+ #pragma rose_outline 
+    for (m = 3; m <= 4; m += 1) {
+      n = (m - 3 + 1) * 5;
+	   #pragma rose_outline 
+      for (i = grid_points[0] - 3; i >= 0; i += -1) {
+        i1 = i + 1;
+        i2 = i + 2;
+        
+//#pragma omp parallel for private (j,k)
+ #pragma rose_outline 
+        for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          
+#pragma omp parallel for private (k) firstprivate (n,i1,i2)
+          for (k = 1; k <= grid_points[2] - 2; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i1][j][k] - lhs[n + 4][i][j][k] * rhs[m][i2][j][k];
+          }
+        }
+      }
+    }",0,0,"    for (m = 3; m <= 4; m += 1) {
+      n = (m - 3 + 1) * 5;
+
+      for (i = grid_points[0] - 3; i >= 0; i += -1) {
+        i1 = i + 1;
+        i2 = i + 2;
+
+        for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          
+
+          for (k = 1; k <= grid_points[2] - 2; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i1][j][k] - lhs[n + 4][i][j][k] * rhs[m][i2][j][k];
+          }
+        }
+      }
+    }","#pragma omp parallel for private(m, n, i, i1, i2, j, k)
+    for (m = 3; m <= 4; m += 1) {
+      n = (m - 3 + 1) * 5;
+
+      for (i = grid_points[0] - 3; i >= 0; i += -1) {
+        i1 = i + 1;
+        i2 = i + 2;
+
+        for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          #pragma omp parallel for
+          for (k = 1; k <= grid_points[2] - 2; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i1][j][k] - lhs[n + 4][i][j][k] * rhs[m][i2][j][k];
+          }
+        }
+      }
+    }","#include <omp.h>
+
+for (m = 3; m <= 4; m += 1) {
+  n = (m - 3 + 1) * 5;
+
+  #pragma omp parallel for private(i, i1, i2, j, k) shared(rhs, lhs, grid_points)
+  for (i = grid_points[0] - 3; i >= 0; i += -1) {
+    i1 = i + 1;
+    i2 = i + 2;
+
+    for (j = 1; j <= grid_points[1] - 2; j += 1) {
+      for (k = 1; k <= grid_points[2] - 2; k += 1) {
+        rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i1][j][k] - lhs[n + 4][i][j][k] * rhs[m][i2][j][k];
+      }
+    }
+  }
+}","#pragma omp parallel for private (n,i1,i2,i,j,k,m)","#pragma omp parallel for private(m, n, i, i1, i2, j, k)","#pragma omp parallel for private(n, i, i1, i2, j, k)",5,4,semantic
+19,./Benchmark-Test-2/3/mg-23.ll,"		#pragma rose_outline
+        for (i2 = 1; i2 <= mm2 - 1; i2 += 1) {
+			#pragma rose_outline
+          for (i1 = d1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] + 0.25 * (z[i3][i2][i1 - 1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }
+		  #pragma rose_outline
+          for (i1 = 1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - t1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - t1 - 1] + 0.125 * (z[i3][i2][i1] + z[i3][i2 - 1][i1] + z[i3][i2][i1 - 1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2][i1] + z[i3 - 1][i2 - 1][i1] + z[i3 - 1][i2][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }
+        }",2,2,"		
+        for (i2 = 1; i2 <= mm2 - 1; i2 += 1) {
+			
+          for (i1 = d1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] + 0.25 * (z[i3][i2][i1 - 1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }
+		
+          for (i1 = 1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - t1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - t1 - 1] + 0.125 * (z[i3][i2][i1] + z[i3][i2 - 1][i1] + z[i3][i2][i1 - 1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2][i1] + z[i3 - 1][i2 - 1][i1] + z[i3 - 1][i2][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }
+        }",,"#include <omp.h>
+
+for (i2 = 1; i2 <= mm2 - 1; i2 += 1) {
+  #pragma omp parallel for private(i1) shared(u, z)
+  for (i1 = d1; i1 <= mm1 - 1; i1 += 1) {
+    u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] + 0.25 * (z[i3][i2][i1 - 1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+  }
+
+  #pragma omp parallel for private(i1) shared(u, z)
+  for (i1 = 1; i1 <= mm1 - 1; i1 += 1) {
+    u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - t1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - t1 - 1] + 0.125 * (z[i3][i2][i1] + z[i3][i2 - 1][i1] + z[i3][i2][i1 - 1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2][i1] + z[i3 - 1][i2 - 1][i1] + z[i3 - 1][i2][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+  }
+}",none,none,#pragma omp parallel for collapse(2),5,1,
+20,./Benchmark-Test-2/3/lu-21.ll,"      #pragma rose_outline
+	  for (k = 0; k <= nz - 1; k += 1) {
+        exact(0,jglob,k,&u[0][j][k][0]);
+      }",2,2,"
+	  for (k = 0; k <= nz - 1; k += 1) {
+        exact(0,jglob,k,&u[0][j][k][0]);
+      }",,"#pragma omp parallel for
+for (k = 0; k <= nz - 1; k += 1) {
+  exact(0,jglob,k,&u[0][j][k][0]);
+}",none,none,#pragma omp parallel for,5,1,
+21,./Benchmark-Test-2/3/lu-8.ll,"	  #pragma rose_outline
+      for (k = 1; k <= nz - 2; k += 1) {
+/*--------------------------------------------------------------------
+c   form the lower triangular part of the jacobian matrix
+--------------------------------------------------------------------*/
+        jacld(k);
+/*--------------------------------------------------------------------
+c   perform the lower triangular solution
+--------------------------------------------------------------------*/
+        blts(nx,ny,nz,k,omega,rsd,a,b,c,d,ist,iend,jst,jend,nx0,ny0);
+      }",2,0,"
+      for (k = 1; k <= nz - 2; k += 1) {
+/*--------------------------------------------------------------------
+c   form the lower triangular part of the jacobian matrix
+--------------------------------------------------------------------*/
+        jacld(k);
+/*--------------------------------------------------------------------
+c   perform the lower triangular solution
+--------------------------------------------------------------------*/
+        blts(nx,ny,nz,k,omega,rsd,a,b,c,d,ist,iend,jst,jend,nx0,ny0);
+      }","#pragma omp parallel for private(k)
+      for (k = 1; k <= nz - 2; k += 1) {
+ 
+        jacld(k);
+ 
+        blts(nx,ny,nz,k,omega,rsd,a,b,c,d,ist,iend,jst,jend,nx0,ny0);
+      }","#pragma omp parallel for
+      for (k = 1; k <= nz - 2; k += 1) {
+ 
+        jacld(k);
+ 
+        blts(nx,ny,nz,k,omega,rsd,a,b,c,d,ist,iend,jst,jend,nx0,ny0);
+      }",none,#pragma omp parallel for private(k),#pragma omp parallel for,0,1,
+22,./Benchmark-Test-2/3/mg-22.ll,"			#pragma rose_outline
+          for (i1 = d1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] + 0.25 * (z[i3][i2][i1 - 1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }",2,2,"		
+          for (i1 = d1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] + 0.25 * (z[i3][i2][i1 - 1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }",,"#pragma omp parallel for
+          for (i1 = d1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] + 0.25 * (z[i3][i2][i1 - 1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }",none,none,#pragma omp parallel for,5,1,
+23,./Benchmark-Test-2/0/sp-66.ll,"//#pragma omp parallel for private (i,j)
+       #pragma rose_outline 
+	  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+        
+#pragma omp parallel for private (j) firstprivate (dssp,k)
+        for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i][j][k - 2] - 4.0 * u[m][i][j][k - 1] + 5.0 * u[m][i][j][k]);
+        }
+      }",0,0,"	  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+        
+
+        for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i][j][k - 2] - 4.0 * u[m][i][j][k - 1] + 5.0 * u[m][i][j][k]);
+        }
+      }","#pragma omp parallel for private(i, j)
+for (i = 1; i <= grid_points[0] - 2; i += 1) {
+    for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i][j][k - 2] - 4.0 * u[m][i][j][k - 1] + 5.0 * u[m][i][j][k]);
+    }
+}","#pragma omp parallel for
+      for (i = 1; i <= grid_points[0] - 2; i += 1) {
+        for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i][j][k - 2] - 4.0 * u[m][i][j][k - 1] + 5.0 * u[m][i][j][k]);
+        }
+      }","#pragma omp parallel for private (i,j)","#pragma omp parallel for private(i, j)",#pragma omp parallel for collapse(2),5,3,
+24,./Benchmark-Test-2/0/sp-45.ll,"//#pragma omp parallel for private (j,k,m)
+ #pragma rose_outline 
+    for (m = 0; m <= 2; m += 1) {
+      
+//#pragma omp parallel for private (j,k)
+ #pragma rose_outline 
+      for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        
+#pragma omp parallel for private (k) firstprivate (i,n,i1)
+        for (k = 1; k <= grid_points[2] - 2; k += 1) {
+          rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i1][j][k];
+        }
+      }
+    }",0,0,"    for (m = 0; m <= 2; m += 1) {
+      
+      for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        
+        for (k = 1; k <= grid_points[2] - 2; k += 1) {
+          rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i1][j][k];
+        }
+      }
+    }","#pragma omp parallel for private(m, j, k)
+    for (m = 0; m <= 2; m += 1) {
+      
+      for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        
+        for (k = 1; k <= grid_points[2] - 2; k += 1) {
+          rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i1][j][k];
+        }
+      }
+    }","#pragma omp parallel for private(m, j, k)
+    for (m = 0; m <= 2; m += 1) {
+      
+      for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        
+        for (k = 1; k <= grid_points[2] - 2; k += 1) {
+          rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i1][j][k];
+        }
+      }
+    }","#pragma omp parallel for private (j,k,m)","#pragma omp parallel for private(m, j, k)",#pragma omp parallel for collapse(3),5,3,
+25,./Benchmark-Test-2/3/mg-19.ll,"	  #pragma rose_outline
+    for (i2 = 1; i2 <= n2 - 1 - 1; i2 += 1) {
+		#pragma rose_outline
+      for (i1 = 1; i1 <= n1 - 1 - 1; i1 += 1) {
+        s = s + r[i3][i2][i1] * r[i3][i2][i1];
+        a = fabs(r[i3][i2][i1]);
+        if (a > tmp) 
+          tmp = a;
+      }
+    }",2,2,"	
+    for (i2 = 1; i2 <= n2 - 1 - 1; i2 += 1) {
+		
+      for (i1 = 1; i1 <= n1 - 1 - 1; i1 += 1) {
+        s = s + r[i3][i2][i1] * r[i3][i2][i1];
+        a = fabs(r[i3][i2][i1]);
+        if (a > tmp) 
+          tmp = a;
+      }
+    }",,"#pragma omp parallel for private(i2, i1) reduction(+:s) reduction(max:tmp)
+    for (i2 = 1; i2 <= n2 - 1 - 1; i2 += 1) {
+      for (i1 = 1; i1 <= n1 - 1 - 1; i1 += 1) {
+        s = s + r[i3][i2][i1] * r[i3][i2][i1];
+        a = fabs(r[i3][i2][i1]);
+        if (a > tmp) 
+          tmp = a;
+      }
+    }",none,none,"#pragma omp parallel for reduction(+:s) reduction(max:tmp) private(i1, i2, a)",5,0,
+26,./Benchmark-Test-2/0/bt-31.ll,"//#pragma omp parallel for private (add,m)
+#pragma rose_outline  
+  for (m = 0; m <= 4; m += 1) {
+          add = rhs[i][j][k][m];
+          rms[m] = rms[m] + add * add;
+        }",0,0," 
+  for (m = 0; m <= 4; m += 1) {
+          add = rhs[i][j][k][m];
+          rms[m] = rms[m] + add * add;
+        }","#pragma omp parallel for private(add)
+for (m = 0; m <= 4; m += 1) {
+    add = rhs[i][j][k][m];
+    #pragma omp atomic
+    rms[m] += add * add;
+}","#pragma omp parallel for
+for (m = 0; m <= 4; m += 1) {
+    add = rhs[i][j][k][m];
+    rms[m] = rms[m] + add * add;
+}","#pragma omp parallel for private (add,m)",#pragma omp parallel for private(add),#pragma omp parallel for reduction(+:rms[:5]),4,2,
+27,./Benchmark-Test-2/0/sp-10.ll,"//#pragma omp parallel for private (i,j,m)
+ #pragma rose_outline   
+  for (m = 0; m <= 2; m += 1) {
+      
+//#pragma omp parallel for private (i,j)
+       #pragma rose_outline 
+	  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+        
+#pragma omp parallel for private (j) firstprivate (k,n,k1)
+        for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1];
+        }
+      }
+    }",0,0,"  for (m = 0; m <= 2; m += 1) {
+       
+	  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+        
+
+        for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1];
+        }
+      }
+    }","#pragma omp parallel for private(m, i, j)
+    for (m = 0; m <= 2; m += 1) {
+        for (i = 1; i <= grid_points[0] - 2; i += 1) {
+            for (j = 1; j <= grid_points[1] - 2; j += 1) {
+                rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1];
+            }
+        }
+    }","#pragma omp parallel for private(m, i, j)
+for (m = 0; m <= 2; m += 1) {
+  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+    for (j = 1; j <= grid_points[1] - 2; j += 1) {
+      rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1];
+    }
+  }
+}","#pragma omp parallel for private (i,j,m)","#pragma omp parallel for private(m, i, j)","#pragma omp parallel for collapse(3) private(m, i, j)",5,4,
+28,./Benchmark-Test-2/3/sp-141.ll,"   #pragma rose_outline 
+  for (i = 0; i <= grid_points[0] - 1; i += 1) {
+    xi = ((double )i) * dnxm1;
+     #pragma rose_outline 
+	for (j = 0; j <= grid_points[1] - 1; j += 1) {
+      eta = ((double )j) * dnym1;
+       #pragma rose_outline 
+	  for (k = 0; k <= grid_points[2] - 1; k += 1) {
+        zeta = ((double )k) * dnzm1;
+         #pragma rose_outline 
+		for (ix = 0; ix <= 1; ix += 1) {
+          exact_solution((double )ix,eta,zeta,&Pface[ix][0][0]);
+        }
+         #pragma rose_outline 
+		for (iy = 0; iy <= 1; iy += 1) {
+          exact_solution(xi,(double )iy,zeta,&Pface[iy][1][0]);
+        }
+         #pragma rose_outline 
+		for (iz = 0; iz <= 1; iz += 1) {
+          exact_solution(xi,eta,(double )iz,&Pface[iz][2][0]);
+        }
+        
+#pragma omp parallel for private (Pxi,Peta,Pzeta,m) firstprivate (xi,eta,zeta)
+        for (m = 0; m <= 4; m += 1) {
+          Pxi = xi * Pface[1][0][m] + (1.0 - xi) * Pface[0][0][m];
+          Peta = eta * Pface[1][1][m] + (1.0 - eta) * Pface[0][1][m];
+          Pzeta = zeta * Pface[1][2][m] + (1.0 - zeta) * Pface[0][2][m];
+          u[m][i][j][k] = Pxi + Peta + Pzeta - Pxi * Peta - Pxi * Pzeta - Peta * Pzeta + Pxi * Peta * Pzeta;
+        }
+      }
+    }
+  }",2,2,"  
+  for (i = 0; i <= grid_points[0] - 1; i += 1) {
+    xi = ((double )i) * dnxm1;
+  
+	for (j = 0; j <= grid_points[1] - 1; j += 1) {
+      eta = ((double )j) * dnym1;
+     
+	  for (k = 0; k <= grid_points[2] - 1; k += 1) {
+        zeta = ((double )k) * dnzm1;
+
+		for (ix = 0; ix <= 1; ix += 1) {
+          exact_solution((double )ix,eta,zeta,&Pface[ix][0][0]);
+        }
+
+		for (iy = 0; iy <= 1; iy += 1) {
+          exact_solution(xi,(double )iy,zeta,&Pface[iy][1][0]);
+        }
+
+		for (iz = 0; iz <= 1; iz += 1) {
+          exact_solution(xi,eta,(double )iz,&Pface[iz][2][0]);
+        }
+        
+
+        for (m = 0; m <= 4; m += 1) {
+          Pxi = xi * Pface[1][0][m] + (1.0 - xi) * Pface[0][0][m];
+          Peta = eta * Pface[1][1][m] + (1.0 - eta) * Pface[0][1][m];
+          Pzeta = zeta * Pface[1][2][m] + (1.0 - zeta) * Pface[0][2][m];
+          u[m][i][j][k] = Pxi + Peta + Pzeta - Pxi * Peta - Pxi * Pzeta - Peta * Pzeta + Pxi * Peta * Pzeta;
+        }
+      }
+    }
+  }",,"#pragma omp parallel for private(i, j, k, ix, iy, iz, xi, eta, zeta, Pxi, Peta, Pzeta)
+  for (i = 0; i <= grid_points[0] - 1; i += 1) {
+    xi = ((double )i) * dnxm1;
+  
+    for (j = 0; j <= grid_points[1] - 1; j += 1) {
+      eta = ((double )j) * dnym1;
+     
+      for (k = 0; k <= grid_points[2] - 1; k += 1) {
+        zeta = ((double )k) * dnzm1;
+
+        for (ix = 0; ix <= 1; ix += 1) {
+          exact_solution((double )ix,eta,zeta,&Pface[ix][0][0]);
+        }
+
+        for (iy = 0; iy <= 1; iy += 1) {
+          exact_solution(xi,(double )iy,zeta,&Pface[iy][1][0]);
+        }
+
+        for (iz = 0; iz <= 1; iz += 1) {
+          exact_solution(xi,eta,(double )iz,&Pface[iz][2][0]);
+        }
+        
+
+        for (m = 0; m <= 4; m += 1) {
+          Pxi = xi * Pface[1][0][m] + (1.0 - xi) * Pface[0][0][m];
+          Peta = eta * Pface[1][1][m] + (1.0 - eta) * Pface[0][1][m];
+          Pzeta = zeta * Pface[1][2][m] + (1.0 - zeta) * Pface[0][2][m];
+          u[m][i][j][k] = Pxi + Peta + Pzeta - Pxi * Peta - Pxi * Pzeta - Peta * Pzeta + Pxi * Peta * Pzeta;
+        }
+      }
+    }
+  }",none,none,"#pragma omp parallel for collapse(3) private(i, j, k, xi, eta, zeta, ix, iy, iz, m, Pxi, Peta, Pzeta)",5,0,
+29,./Benchmark-Test-2/3/mg-58.ll,"  #pragma rose_outline
+  for (it = 1; it <= nit; it += 1) {
+    mg3P(u,v,r,a,c,n1,n2,n3,lt);
+    resid(u[lt],v,r[lt],n1,n2,n3,a,lt);
+  }",2,2,"
+  for (it = 1; it <= nit; it += 1) {
+    mg3P(u,v,r,a,c,n1,n2,n3,lt);
+    resid(u[lt],v,r[lt],n1,n2,n3,a,lt);
+  }",,"#pragma omp parallel for
+  for (it = 1; it <= nit; it += 1) {
+    mg3P(u,v,r,a,c,n1,n2,n3,lt);
+    resid(u[lt],v,r[lt],n1,n2,n3,a,lt);
+  }",none,none,#pragma omp parallel for,5,1,
+30,./Benchmark-Test-2/3/sp-128.ll,"	 #pragma rose_outline 
+    for (k = 0; k <= grid_points[2] - 1; k += 1) {
+      zeta = ((double )k) * dnzm1;
+      exact_solution(xi,eta,zeta,temp);
+      
+#pragma omp parallel for private (m) firstprivate (j)
+      for (m = 0; m <= 4; m += 1) {
+        u[m][i][j][k] = temp[m];
+      }
+    }",2,2,"
+    for (k = 0; k <= grid_points[2] - 1; k += 1) {
+      zeta = ((double )k) * dnzm1;
+      exact_solution(xi,eta,zeta,temp);
+      
+
+      for (m = 0; m <= 4; m += 1) {
+        u[m][i][j][k] = temp[m];
+      }
+    }",,"#pragma omp parallel for
+    for (k = 0; k <= grid_points[2] - 1; k += 1) {
+      zeta = ((double )k) * dnzm1;
+      exact_solution(xi,eta,zeta,temp);
+      
+
+      for (m = 0; m <= 4; m += 1) {
+        u[m][i][j][k] = temp[m];
+      }
+    }",none,none,"#pragma omp parallel for private(zeta, temp, m)",5,0,
+31,./Benchmark-Test-2/0/sp-1.ll,"//#pragma omp parallel for private (k1,k2,j,k)
+         #pragma rose_outline 
+		for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          for (k = grid_points[2] - 3; k >= 0; k += -1) {
+            k1 = k + 1;
+            k2 = k + 2;
+            rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1] - lhs[n + 4][i][j][k] * rhs[m][i][j][k2];
+          }
+        }",0,0,"		for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          for (k = grid_points[2] - 3; k >= 0; k += -1) {
+            k1 = k + 1;
+            k2 = k + 2;
+            rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1] - lhs[n + 4][i][j][k] * rhs[m][i][j][k2];
+          }
+        }","#pragma omp parallel for private(j, k, k1, k2)
+for (j = 1; j <= grid_points[1] - 2; j += 1) {
+    for (k = grid_points[2] - 3; k >= 0; k += -1) {
+        k1 = k + 1;
+        k2 = k + 2;
+        rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1] - lhs[n + 4][i][j][k] * rhs[m][i][j][k2];
+    }
+}","#pragma omp parallel for private(j, k, k1, k2) 
+for (j = 1; j <= grid_points[1] - 2; j += 1) {
+  for (k = grid_points[2] - 3; k >= 0; k += -1) {
+    k1 = k + 1;
+    k2 = k + 2;
+    rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1] - lhs[n + 4][i][j][k] * rhs[m][i][j][k2];
+  }
+}","#pragma omp parallel for private (k1,k2,j,k)","#pragma omp parallel for private(j, k, k1, k2)","#pragma omp parallel for private(j, k, k1, k2)",5,5,semantic
+32,./Benchmark-Test-2/0/sp-4.ll,"//#pragma omp parallel for private (k1,k2,j,k)
+         #pragma rose_outline 
+		for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          for (k = grid_points[2] - 3; k >= 0; k += -1) {
+            k1 = k + 1;
+            k2 = k + 2;
+            rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1] - lhs[n + 4][i][j][k] * rhs[m][i][j][k2];
+          }
+        }",0,0,"		for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          for (k = grid_points[2] - 3; k >= 0; k += -1) {
+            k1 = k + 1;
+            k2 = k + 2;
+            rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1] - lhs[n + 4][i][j][k] * rhs[m][i][j][k2];
+          }
+        }","#pragma omp parallel for private(j, k, k1, k2)
+for (j = 1; j <= grid_points[1] - 2; j += 1) {
+    for (k = grid_points[2] - 3; k >= 0; k += -1) {
+        k1 = k + 1;
+        k2 = k + 2;
+        rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1] - lhs[n + 4][i][j][k] * rhs[m][i][j][k2];
+    }
+}","#pragma omp parallel for private(j, k, k1, k2) 
+for (j = 1; j <= grid_points[1] - 2; j += 1) {
+  for (k = grid_points[2] - 3; k >= 0; k += -1) {
+    k1 = k + 1;
+    k2 = k + 2;
+    rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1] - lhs[n + 4][i][j][k] * rhs[m][i][j][k2];
+  }
+}","#pragma omp parallel for private (k1,k2,j,k)","#pragma omp parallel for private(j, k, k1, k2)","#pragma omp parallel for private(j, k, k1, k2)",5,5,semantic
+33,./Benchmark-Test-2/0/cg-9.ll,"//#pragma omp parallel for private (j)
+#pragma rose_outline
+  for (j = 1; j <= n; j += 1) {
+    rowstr[j] = 0;
+    mark[j] = 0;
+  }",0,1,"  for (j = 1; j <= n; j += 1) {
+    rowstr[j] = 0;
+    mark[j] = 0;
+  }","#pragma omp parallel for private(j) reduction(+:rowstr[:n+1], mark[:n+1])
+  for (j = 1; j <= n; j += 1) {
+    rowstr[j] = 0;
+    mark[j] = 0;
+  }","#pragma omp parallel for
+  for (j = 1; j <= n; j += 1) {
+    rowstr[j] = 0;
+    mark[j] = 0;
+  }",#pragma omp parallel for private (j),#pragma omp parallel for private(j),#pragma omp parallel for,5,3,
+34,./Benchmark-Test-2/3/lu-63.ll,"	#pragma rose_outline
+    for (m = 0; m <= 4; m += 1) {
+      sum[m] = sqrt(sum[m] / ((nx0 - 2) * (ny0 - 2) * (nz0 - 2)));
+    }",2,2,"
+    for (m = 0; m <= 4; m += 1) {
+      sum[m] = sqrt(sum[m] / ((nx0 - 2) * (ny0 - 2) * (nz0 - 2)));
+    }",,"#pragma omp parallel for
+    for (m = 0; m <= 4; m += 1) {
+      sum[m] = sqrt(sum[m] / ((nx0 - 2) * (ny0 - 2) * (nz0 - 2)));
+    }",none,none,#pragma omp parallel for,5,1,
+35,./Benchmark-Test-2/3/mg-5.ll,"  #pragma rose_outline
+  for (i = 10 - 1; i >= m0; i += -1) {
+    z[j3[i][0]][j2[i][0]][j1[i][0]] = - 1.0;
+  }",2,2,"
+  for (i = 10 - 1; i >= m0; i += -1) {
+    z[j3[i][0]][j2[i][0]][j1[i][0]] = - 1.0;
+  }",,"#pragma omp parallel for
+  for (i = 10 - 1; i >= m0; i += -1) {
+    z[j3[i][0]][j2[i][0]][j1[i][0]] = - 1.0;
+  }",none,none,#pragma omp parallel for,5,1,
+36,./Benchmark-Test-2/0/lu-86.ll,"//#pragma omp parallel for private (m)
+        #pragma rose_outline
+		for (m = 0; m <= 4; m += 1) {
+          frct[1][j][k][m] = frct[1][j][k][m] - dsspm * (+5.0 * rsd[1][j][k][m] - 4.0 * rsd[2][j][k][m] + rsd[3][j][k][m]);
+          frct[2][j][k][m] = frct[2][j][k][m] - dsspm * (- 4.0 * rsd[1][j][k][m] + 6.0 * rsd[2][j][k][m] - 4.0 * rsd[3][j][k][m] + rsd[4][j][k][m]);
+        }",0,0,"		for (m = 0; m <= 4; m += 1) {
+          frct[1][j][k][m] = frct[1][j][k][m] - dsspm * (+5.0 * rsd[1][j][k][m] - 4.0 * rsd[2][j][k][m] + rsd[3][j][k][m]);
+          frct[2][j][k][m] = frct[2][j][k][m] - dsspm * (- 4.0 * rsd[1][j][k][m] + 6.0 * rsd[2][j][k][m] - 4.0 * rsd[3][j][k][m] + rsd[4][j][k][m]);
+        }","#pragma omp parallel for private(m)
+for (m = 0; m <= 4; m += 1) {
+    frct[1][j][k][m] = frct[1][j][k][m] - dsspm * (+5.0 * rsd[1][j][k][m] - 4.0 * rsd[2][j][k][m] + rsd[3][j][k][m]);
+    frct[2][j][k][m] = frct[2][j][k][m] - dsspm * (- 4.0 * rsd[1][j][k][m] + 6.0 * rsd[2][j][k][m] - 4.0 * rsd[3][j][k][m] + rsd[4][j][k][m]);
+}","#pragma omp parallel for
+for (m = 0; m <= 4; m += 1) {
+  frct[1][j][k][m] = frct[1][j][k][m] - dsspm * (+5.0 * rsd[1][j][k][m] - 4.0 * rsd[2][j][k][m] + rsd[3][j][k][m]);
+  frct[2][j][k][m] = frct[2][j][k][m] - dsspm * (- 4.0 * rsd[1][j][k][m] + 6.0 * rsd[2][j][k][m] - 4.0 * rsd[3][j][k][m] + rsd[4][j][k][m]);
+}",#pragma omp parallel for private (m),#pragma omp parallel for private(m),#pragma omp parallel for,5,3,
+37,./Benchmark-Test-2/0/sp-71.ll,"//#pragma omp parallel for private (i,j,k)
+ #pragma rose_outline   
+  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+        
+//#pragma omp parallel for private (j,k)
+ #pragma rose_outline        
+	   for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          
+#pragma omp parallel for private (k) firstprivate (dssp)
+          for (k = 3 * 1; k <= grid_points[2] - 3 - 1; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i][j][k - 2] - 4.0 * u[m][i][j][k - 1] + 6.0 * u[m][i][j][k] - 4.0 * u[m][i][j][k + 1] + u[m][i][j][k + 2]);
+          }
+        }
+      }",0,0,"  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+   
+	   for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          
+
+          for (k = 3 * 1; k <= grid_points[2] - 3 - 1; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i][j][k - 2] - 4.0 * u[m][i][j][k - 1] + 6.0 * u[m][i][j][k] - 4.0 * u[m][i][j][k + 1] + u[m][i][j][k + 2]);
+          }
+        }
+      }","#pragma omp parallel for private(i, j, k)
+for (i = 1; i <= grid_points[0] - 2; i += 1) {
+   
+   for (j = 1; j <= grid_points[1] - 2; j += 1) {
+      
+      for (k = 3 * 1; k <= grid_points[2] - 3 - 1; k += 1) {
+        rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i][j][k - 2] - 4.0 * u[m][i][j][k - 1] + 6.0 * u[m][i][j][k] - 4.0 * u[m][i][j][k + 1] + u[m][i][j][k + 2]);
+      }
+    }
+}","#pragma omp parallel for private(i, j, k) collapse(3)
+for (i = 1; i <= grid_points[0] - 2; i += 1) {
+    for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        for (k = 3 * 1; k <= grid_points[2] - 3 - 1; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i][j][k - 2] - 4.0 * u[m][i][j][k - 1] + 6.0 * u[m][i][j][k] - 4.0 * u[m][i][j][k + 1] + u[m][i][j][k + 2]);
+        }
+    }
+}","#pragma omp parallel for private (i,j,k)","#pragma omp parallel for private(i, j, k)",#pragma omp parallel for collapse(3),5,2,
+38,./Benchmark-Test-2/0/sp-79.ll,"//#pragma omp parallel for private (i,k)
+       #pragma rose_outline 
+	  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+        
+#pragma omp parallel for private (k) firstprivate (dssp,j)
+        for (k = 1; k <= grid_points[2] - 2; k += 1) {
+          rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i][j - 2][k] - 4.0 * u[m][i][j - 1][k] + 5.0 * u[m][i][j][k]);
+        }
+      }",0,0,"	  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+        
+
+        for (k = 1; k <= grid_points[2] - 2; k += 1) {
+          rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i][j - 2][k] - 4.0 * u[m][i][j - 1][k] + 5.0 * u[m][i][j][k]);
+        }
+      }","#pragma omp parallel for private(i, k)
+for (i = 1; i <= grid_points[0] - 2; i += 1) {
+    for (k = 1; k <= grid_points[2] - 2; k += 1) {
+        rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i][j - 2][k] - 4.0 * u[m][i][j - 1][k] + 5.0 * u[m][i][j][k]);
+    }
+}","#pragma omp parallel for private(i, k) shared(rhs, u)
+for (i = 1; i <= grid_points[0] - 2; i += 1) {
+  for (k = 1; k <= grid_points[2] - 2; k += 1) {
+    rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i][j - 2][k] - 4.0 * u[m][i][j - 1][k] + 5.0 * u[m][i][j][k]);
+  }
+}","#pragma omp parallel for private (i,k)","#pragma omp parallel for private(i, k)",#pragma omp parallel for collapse(2),5,2,
+39,./Benchmark-Test-2/3/mg-63.ll,"  #pragma rose_outline
+  for (k = 0; k <= m3[lt] - 1; k += 1) {
+    v[k] = ((double **)(malloc(m2[lt] * sizeof(double *))));
+    #pragma rose_outline
+	for (j = 0; j <= m2[lt] - 1; j += 1) {
+      v[k][j] = ((double *)(malloc(m1[lt] * sizeof(double ))));
+    }
+  }",2,2,"
+  for (k = 0; k <= m3[lt] - 1; k += 1) {
+    v[k] = ((double **)(malloc(m2[lt] * sizeof(double *))));
+
+	for (j = 0; j <= m2[lt] - 1; j += 1) {
+      v[k][j] = ((double *)(malloc(m1[lt] * sizeof(double ))));
+    }
+  }",,"#pragma omp parallel for
+  for (k = 0; k <= m3[lt] - 1; k += 1) {
+    v[k] = ((double **)(malloc(m2[lt] * sizeof(double *))));
+
+    #pragma omp parallel for
+    for (j = 0; j <= m2[lt] - 1; j += 1) {
+      v[k][j] = ((double *)(malloc(m1[lt] * sizeof(double ))));
+    }
+  }",none,none,none,5,5,
+40,./Benchmark-Test-2/0/sp-95.ll,"//#pragma omp parallel for private (j,k,m)
+     #pragma rose_outline 
+	for (m = 0; m <= 4; m += 1) {
+      
+//#pragma omp parallel for private (j,k)
+ #pragma rose_outline      
+	 for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        
+#pragma omp parallel for private (k) firstprivate (dssp,i)
+        for (k = 1; k <= grid_points[2] - 2; k += 1) {
+          rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i - 2][j][k] - 4.0 * u[m][i - 1][j][k] + 6.0 * u[m][i][j][k] - 4.0 * u[m][i + 1][j][k]);
+        }
+      }
+    }",0,0,"	for (m = 0; m <= 4; m += 1) {
+      
+	 for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        
+
+        for (k = 1; k <= grid_points[2] - 2; k += 1) {
+          rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i - 2][j][k] - 4.0 * u[m][i - 1][j][k] + 6.0 * u[m][i][j][k] - 4.0 * u[m][i + 1][j][k]);
+        }
+      }
+    }","#pragma omp parallel for private(m, j, k)
+for (m = 0; m <= 4; m += 1) {
+    for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        for (k = 1; k <= grid_points[2] - 2; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i - 2][j][k] - 4.0 * u[m][i - 1][j][k] + 6.0 * u[m][i][j][k] - 4.0 * u[m][i + 1][j][k]);
+        }
+    }
+}","#pragma omp parallel for private(m, j, k) 
+for (m = 0; m <= 4; m += 1) {
+  for (j = 1; j <= grid_points[1] - 2; j += 1) {
+    for (k = 1; k <= grid_points[2] - 2; k += 1) {
+      rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i - 2][j][k] - 4.0 * u[m][i - 1][j][k] + 6.0 * u[m][i][j][k] - 4.0 * u[m][i + 1][j][k]);
+    }
+  }
+}","#pragma omp parallel for private (j,k,m)","#pragma omp parallel for private(m, j, k)",#pragma omp parallel for collapse(3),5,2,
+41,./Benchmark-Test-2/0/bt-36.ll,"//#pragma omp parallel for private (m)
+  #pragma rose_outline
+  for (m = 0; m <= 4; m += 1) {
+    rms[m] = 0.0;
+  }",0,0,"  for (m = 0; m <= 4; m += 1) {
+    rms[m] = 0.0;
+  }","#pragma omp parallel for private(m)
+  for (m = 0; m <= 4; m += 1) {
+    rms[m] = 0.0;
+  }","#pragma omp parallel for
+  for (m = 0; m <= 4; m += 1) {
+    rms[m] = 0.0;
+  }",#pragma omp parallel for private (m),#pragma omp parallel for private(m),#pragma omp parallel for,5,2,
+42,./Benchmark-Test-2/3/mg-37.ll,"		#pragma rose_outline
+        for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+          u[2 * i3][2 * i2 + 1][2 * i1] = u[2 * i3][2 * i2 + 1][2 * i1] + 0.5 * z1[i1];
+          u[2 * i3][2 * i2 + 1][2 * i1 + 1] = u[2 * i3][2 * i2 + 1][2 * i1 + 1] + 0.25 * (z1[i1] + z1[i1 + 1]);
+        }",2,2,"		
+        for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+          u[2 * i3][2 * i2 + 1][2 * i1] = u[2 * i3][2 * i2 + 1][2 * i1] + 0.5 * z1[i1];
+          u[2 * i3][2 * i2 + 1][2 * i1 + 1] = u[2 * i3][2 * i2 + 1][2 * i1 + 1] + 0.25 * (z1[i1] + z1[i1 + 1]);
+        }",,"#pragma omp parallel for
+for (int i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+  u[2 * i3][2 * i2 + 1][2 * i1] = u[2 * i3][2 * i2 + 1][2 * i1] + 0.5 * z1[i1];
+  u[2 * i3][2 * i2 + 1][2 * i1 + 1] = u[2 * i3][2 * i2 + 1][2 * i1 + 1] + 0.25 * (z1[i1] + z1[i1 + 1]);
+}",none,none,#pragma omp parallel for,5,1,
+43,./Benchmark-Test-2/3/sp-133.ll,"   #pragma rose_outline 
+  for (j = 0; j <= grid_points[1] - 1; j += 1) {
+    eta = ((double )j) * dnym1;
+	 #pragma rose_outline 
+    for (k = 0; k <= grid_points[2] - 1; k += 1) {
+      zeta = ((double )k) * dnzm1;
+      exact_solution(xi,eta,zeta,temp);
+      
+#pragma omp parallel for private (m) firstprivate (i)
+      for (m = 0; m <= 4; m += 1) {
+        u[m][i][j][k] = temp[m];
+      }
+    }
+  }",2,2,"
+  for (j = 0; j <= grid_points[1] - 1; j += 1) {
+    eta = ((double )j) * dnym1;
+	 
+    for (k = 0; k <= grid_points[2] - 1; k += 1) {
+      zeta = ((double )k) * dnzm1;
+      exact_solution(xi,eta,zeta,temp);
+      
+
+      for (m = 0; m <= 4; m += 1) {
+        u[m][i][j][k] = temp[m];
+      }
+    }
+  }",,"#pragma omp parallel for private(j, k, eta, zeta, temp)
+  for (i = 0; i <= grid_points[0] - 1; i += 1) {
+    for (j = 0; j <= grid_points[1] - 1; j += 1) {
+      eta = ((double )j) * dnym1;
+      
+      for (k = 0; k <= grid_points[2] - 1; k += 1) {
+        zeta = ((double )k) * dnzm1;
+        exact_solution(xi,eta,zeta,temp);
+        
+        for (m = 0; m <= 4; m += 1) {
+          u[m][i][j][k] = temp[m];
+        }
+      }
+    }
+  }",none,none,"#pragma omp parallel for private(j, k, m, eta, zeta, temp)",5,0,
+44,./Benchmark-Test-2/3/sp-126.ll,"	 #pragma rose_outline 
+    for (j = 0; j <= grid_points[1] - 1; j += 1) {
+      eta = ((double )j) * dnym1;
+      exact_solution(xi,eta,zeta,temp);
+      
+#pragma omp parallel for private (m) firstprivate (k)
+      for (m = 0; m <= 4; m += 1) {
+        u[m][i][j][k] = temp[m];
+      }
+    }",2,2,"	  
+    for (j = 0; j <= grid_points[1] - 1; j += 1) {
+      eta = ((double )j) * dnym1;
+      exact_solution(xi,eta,zeta,temp);
+      
+
+      for (m = 0; m <= 4; m += 1) {
+        u[m][i][j][k] = temp[m];
+      }
+    }",,"#pragma omp parallel for
+    for (j = 0; j <= grid_points[1] - 1; j += 1) {
+      eta = ((double )j) * dnym1;
+      exact_solution(xi,eta,zeta,temp);
+      
+
+      for (m = 0; m <= 4; m += 1) {
+        u[m][i][j][k] = temp[m];
+      }
+    }",none,none,"#pragma omp parallel for private(j, eta, m, temp)",5,0,
+45,./Benchmark-Test-2/0/ft-8.ll,"//#pragma omp parallel for private (i)
+#pragma rose_outline
+          for (i = 0; i <= fftblock - 1; i += 1) {
+            y0[k][i] . real = x[k][j][i + ii] . real;
+            y0[k][i] . imag = x[k][j][i + ii] . imag;
+          }",0,0,"          for (i = 0; i <= fftblock - 1; i += 1) {
+            y0[k][i] . real = x[k][j][i + ii] . real;
+            y0[k][i] . imag = x[k][j][i + ii] . imag;
+          }","#pragma omp parallel for private(i)
+for (i = 0; i <= fftblock - 1; i += 1) {
+    y0[k][i] . real = x[k][j][i + ii] . real;
+    y0[k][i] . imag = x[k][j][i + ii] . imag;
+}","#pragma omp parallel for
+for (i = 0; i <= fftblock - 1; i += 1) {
+    y0[k][i].real = x[k][j][i + ii].real;
+    y0[k][i].imag = x[k][j][i + ii].imag;
+}",#pragma omp parallel for private (i),#pragma omp parallel for private(i),#pragma omp parallel for,5,3,
+46,./Benchmark-Test-2/3/ft-16.ll,"  #pragma rose_outline
+  for (i = 0; i <= 2; i += 1) {
+    logd[i] = ilog2(d[i]);
+  }",2,2,"
+  for (i = 0; i <= 2; i += 1) {
+    logd[i] = ilog2(d[i]);
+  }",,"#pragma omp parallel for
+  for (i = 0; i <= 2; i += 1) {
+    logd[i] = ilog2(d[i]);
+  }",none,none,#pragma omp parallel for,5,1,
+47,./Benchmark-Test-2/2/is-10.ll,"//#pragma omp parallel for private (i) reduction (*:R23,T23)
+#pragma rose_outline
+    for (i = 1; i <= 23; i += 1) {
+      R23 = 0.50 * R23;
+      T23 = 2.0 * T23;
+    }",1,1,"
+    for (i = 1; i <= 23; i += 1) {
+      R23 = 0.50 * R23;
+      T23 = 2.0 * T23;
+    }","#pragma omp parallel for private(i) reduction(*:R23, T23)
+    for (i = 1; i <= 23; i += 1) {
+      R23 = 0.50 * R23;
+      T23 = 2.0 * T23;
+    }","#pragma omp parallel for
+    for (i = 1; i <= 23; i += 1) {
+      R23 = 0.50 * R23;
+      T23 = 2.0 * T23;
+    }","#pragma omp parallel for private (i) reduction (*:R23,T23)","#pragma omp parallel for private(i) reduction(*:R23, T23)",#pragma omp parallel for,5,2,
+48,./Benchmark-Test-2/3/sp-138.ll,"         #pragma rose_outline 
+		for (ix = 0; ix <= 1; ix += 1) {
+          exact_solution((double )ix,eta,zeta,&Pface[ix][0][0]);
+        }",2,2," 
+		for (ix = 0; ix <= 1; ix += 1) {
+          exact_solution((double )ix,eta,zeta,&Pface[ix][0][0]);
+        }",,"#pragma omp parallel for
+for (ix = 0; ix <= 1; ix += 1) {
+  exact_solution((double )ix,eta,zeta,&Pface[ix][0][0]);
+}",none,none,#pragma omp parallel for,5,1,
+49,./Benchmark-Test-2/3/sp-125.ll,"   #pragma rose_outline 
+  for (i = 0; i <= grid_points[0] - 1; i += 1) {
+    xi = ((double )i) * dnxm1;
+	 #pragma rose_outline 
+    for (j = 0; j <= grid_points[1] - 1; j += 1) {
+      eta = ((double )j) * dnym1;
+      exact_solution(xi,eta,zeta,temp);
+      
+#pragma omp parallel for private (m) firstprivate (k)
+      for (m = 0; m <= 4; m += 1) {
+        u[m][i][j][k] = temp[m];
+      }
+    }
+  }",2,2,"
+  for (i = 0; i <= grid_points[0] - 1; i += 1) {
+    xi = ((double )i) * dnxm1;
+ 
+    for (j = 0; j <= grid_points[1] - 1; j += 1) {
+      eta = ((double )j) * dnym1;
+      exact_solution(xi,eta,zeta,temp);
+      
+
+      for (m = 0; m <= 4; m += 1) {
+        u[m][i][j][k] = temp[m];
+      }
+    }
+  }",,"#pragma omp parallel for private(xi, eta, temp)
+  for (i = 0; i <= grid_points[0] - 1; i += 1) {
+    xi = ((double )i) * dnxm1;
+ 
+    for (j = 0; j <= grid_points[1] - 1; j += 1) {
+      eta = ((double )j) * dnym1;
+      exact_solution(xi,eta,zeta,temp);
+      
+
+      for (m = 0; m <= 4; m += 1) {
+        u[m][i][j][k] = temp[m];
+      }
+    }
+  }",none,none,"#pragma omp parallel for private(i, j, m, xi, eta, temp)",5,0,
+50,./Benchmark-Test-2/0/lu-66.ll,"//#pragma omp parallel for private (m)
+    #pragma rose_outline
+	for (m = 0; m <= 4; m += 1) {
+      sum[m] = 0.0;
+    }",0,0,"
+
+	for (m = 0; m <= 4; m += 1) {
+      sum[m] = 0.0;
+    }","#pragma omp parallel for private(m)
+    for (m = 0; m <= 4; m += 1) {
+      sum[m] = 0.0;
+    }","#include <omp.h>
+
+#pragma omp parallel for
+for (m = 0; m <= 4; m += 1) {
+  sum[m] = 0.0;
+}",#pragma omp parallel for private (m),#pragma omp parallel for private(m),#pragma omp parallel for,5,3,
+51,./Benchmark-Test-2/0/sp-118.ll,"//#pragma omp parallel for private (i,j,k)
+ #pragma rose_outline 
+    for (i = 0; i <= grid_points[0] - 1; i += 1) {
+      
+//#pragma omp parallel for private (j,k)
+ #pragma rose_outline 
+      for (j = 0; j <= grid_points[1] - 1; j += 1) {
+        
+//#pragma omp parallel for private (k)
+ #pragma rose_outline 
+        for (k = 0; k <= grid_points[2] - 1; k += 1) {
+          lhs[5 * n + 2][i][j][k] = 1.0;
+        }
+      }
+    }",0,0,"
+
+    for (i = 0; i <= grid_points[0] - 1; i += 1) {
+      
+ 
+      for (j = 0; j <= grid_points[1] - 1; j += 1) {
+        
+ 
+        for (k = 0; k <= grid_points[2] - 1; k += 1) {
+          lhs[5 * n + 2][i][j][k] = 1.0;
+        }
+      }
+    }","#pragma omp parallel for private(i, j, k)
+    for (i = 0; i <= grid_points[0] - 1; i += 1) {
+      
+ 
+      for (j = 0; j <= grid_points[1] - 1; j += 1) {
+        
+ 
+        for (k = 0; k <= grid_points[2] - 1; k += 1) {
+          lhs[5 * n + 2][i][j][k] = 1.0;
+        }
+      }
+    }","#pragma omp parallel for collapse(3)
+    for (i = 0; i <= grid_points[0] - 1; i += 1) {
+      for (j = 0; j <= grid_points[1] - 1; j += 1) {
+        for (k = 0; k <= grid_points[2] - 1; k += 1) {
+          lhs[5 * n + 2][i][j][k] = 1.0;
+        }
+      }
+    }","#pragma omp parallel for private (i,j,k)","#pragma omp parallel for private(i, j, k)",#pragma omp parallel for collapse(3),5,2,
+52,./Benchmark-Test-2/3/lu-1.ll,"  #pragma rose_outline
+  for (m = 0; m <= 4; m += 1) {
+    if (( *class) == 'U') {
+      printf(""          %2d  %20.13e\n"",m,xce[m]);
+    }
+     else if (xcedif[m] > epsilon) {
+       *verified = 0;
+      printf("" FAILURE: %2d  %20.13e%20.13e%20.13e\n"",m,xce[m],xceref[m],xcedif[m]);
+    }
+     else {
+      printf(""          %2d  %20.13e%20.13e%20.13e\n"",m,xce[m],xceref[m],xcedif[m]);
+    }
+  }",2,2,"
+  for (m = 0; m <= 4; m += 1) {
+    if (( *class) == 'U') {
+      printf(""          %2d  %20.13e\n"",m,xce[m]);
+    }
+     else if (xcedif[m] > epsilon) {
+       *verified = 0;
+      printf("" FAILURE: %2d  %20.13e%20.13e%20.13e\n"",m,xce[m],xceref[m],xcedif[m]);
+    }
+     else {
+      printf(""          %2d  %20.13e%20.13e%20.13e\n"",m,xce[m],xceref[m],xcedif[m]);
+    }
+  }",,"#pragma omp parallel for
+  for (m = 0; m <= 4; m += 1) {
+    if ((*class) == 'U') {
+      printf(""          %2d  %20.13e\n"", m, xce[m]);
+    }
+    else if (xcedif[m] > epsilon) {
+      *verified = 0;
+      printf("" FAILURE: %2d  %20.13e%20.13e%20.13e\n"", m, xce[m], xceref[m], xcedif[m]);
+    }
+    else {
+      printf(""          %2d  %20.13e%20.13e%20.13e\n"", m, xce[m], xceref[m], xcedif[m]);
+    }
+  }",none,none,#pragma omp parallel for,5,1,
+53,./Benchmark-Test-2/0/lu-14.ll,"//#pragma omp parallel for private (j,k,m)
+#pragma rose_outline  
+  for (j = 0; j <= 63; j += 1) {
+        
+//#pragma omp parallel for private (k,m)
+#pragma rose_outline  
+  for (k = 0; k <= 4; k += 1) {
+          
+//#pragma omp parallel for private (m)
+#pragma rose_outline  
+  for (m = 0; m <= 4; m += 1) {
+            a[i][j][k][m] = 0.0;
+            b[i][j][k][m] = 0.0;
+            c[i][j][k][m] = 0.0;
+            d[i][j][k][m] = 0.0;
+          }
+        }
+      }",0,0,"
+
+  for (j = 0; j <= 63; j += 1) {
+        
+  for (k = 0; k <= 4; k += 1) {
+          
+  for (m = 0; m <= 4; m += 1) {
+            a[i][j][k][m] = 0.0;
+            b[i][j][k][m] = 0.0;
+            c[i][j][k][m] = 0.0;
+            d[i][j][k][m] = 0.0;
+          }
+        }
+      }","#pragma omp parallel for private(j, k, m)
+  for (j = 0; j <= 63; j += 1) {
+        
+  for (k = 0; k <= 4; k += 1) {
+          
+  for (m = 0; m <= 4; m += 1) {
+            a[i][j][k][m] = 0.0;
+            b[i][j][k][m] = 0.0;
+            c[i][j][k][m] = 0.0;
+            d[i][j][k][m] = 0.0;
+          }
+        }
+      }","#pragma omp parallel for
+  for (j = 0; j <= 63; j += 1) {
+        
+    for (k = 0; k <= 4; k += 1) {
+          
+      for (m = 0; m <= 4; m += 1) {
+        a[i][j][k][m] = 0.0;
+        b[i][j][k][m] = 0.0;
+        c[i][j][k][m] = 0.0;
+        d[i][j][k][m] = 0.0;
+      }
+    }
+  }","#pragma omp parallel for private (j,k,m)","#pragma omp parallel for private(j, k, m)",#pragma omp parallel for collapse(3),5,2,
+54,./Benchmark-Test-2/2/lu-50.ll,"//#pragma omp parallel for private (k) reduction (+:frc2)
+    #pragma rose_outline
+	for (k = ki1; k <= ki2 - 1; k += 1) {
+      frc2 = frc2 + (phi1[i][k] + phi1[i + 1][k] + phi1[i][k + 1] + phi1[i + 1][k + 1] + phi2[i][k] + phi2[i + 1][k] + phi2[i][k + 1] + phi2[i + 1][k + 1]);
+    }",1,1,"
+
+	for (k = ki1; k <= ki2 - 1; k += 1) {
+      frc2 = frc2 + (phi1[i][k] + phi1[i + 1][k] + phi1[i][k + 1] + phi1[i + 1][k + 1] + phi2[i][k] + phi2[i + 1][k] + phi2[i][k + 1] + phi2[i + 1][k + 1]);
+    }","#pragma omp parallel for private(k) reduction(+:frc2)
+	for (k = ki1; k <= ki2 - 1; k += 1) {
+      frc2 = frc2 + (phi1[i][k] + phi1[i + 1][k] + phi1[i][k + 1] + phi1[i + 1][k + 1] + phi2[i][k] + phi2[i + 1][k] + phi2[i][k + 1] + phi2[i + 1][k + 1]);
+    }","#pragma omp parallel for reduction(+:frc2)
+    for (k = ki1; k <= ki2 - 1; k += 1) {
+      frc2 = frc2 + (phi1[i][k] + phi1[i + 1][k] + phi1[i][k + 1] + phi1[i + 1][k + 1] + phi2[i][k] + phi2[i + 1][k] + phi2[i][k + 1] + phi2[i + 1][k + 1]);
+    }",#pragma omp parallel for private (k) reduction (+:frc2),#pragma omp parallel for private(k) reduction(+:frc2),#pragma omp parallel for reduction(+:frc2),5,4,
+55,./Benchmark-Test-2/0/lu-40.ll,"//#pragma omp parallel for private (q,u21,k)
+#pragma rose_outline
+        for (k = 1; k <= nz - 2; k += 1) {
+          flux[i][j][k][0] = u[i][j][k][1];
+          u21 = u[i][j][k][1] / u[i][j][k][0];
+          q = 0.50 * (u[i][j][k][1] * u[i][j][k][1] + u[i][j][k][2] * u[i][j][k][2] + u[i][j][k][3] * u[i][j][k][3]) / u[i][j][k][0];
+          flux[i][j][k][1] = u[i][j][k][1] * u21 + 0.40e+00 * (u[i][j][k][4] - q);
+          flux[i][j][k][2] = u[i][j][k][2] * u21;
+          flux[i][j][k][3] = u[i][j][k][3] * u21;
+          flux[i][j][k][4] = (1.40e+00 * u[i][j][k][4] - 0.40e+00 * q) * u21;
+        }",0,0,"
+
+        for (k = 1; k <= nz - 2; k += 1) {
+          flux[i][j][k][0] = u[i][j][k][1];
+          u21 = u[i][j][k][1] / u[i][j][k][0];
+          q = 0.50 * (u[i][j][k][1] * u[i][j][k][1] + u[i][j][k][2] * u[i][j][k][2] + u[i][j][k][3] * u[i][j][k][3]) / u[i][j][k][0];
+          flux[i][j][k][1] = u[i][j][k][1] * u21 + 0.40e+00 * (u[i][j][k][4] - q);
+          flux[i][j][k][2] = u[i][j][k][2] * u21;
+          flux[i][j][k][3] = u[i][j][k][3] * u21;
+          flux[i][j][k][4] = (1.40e+00 * u[i][j][k][4] - 0.40e+00 * q) * u21;
+        }","#pragma omp parallel for private(u21, q)
+        for (k = 1; k <= nz - 2; k += 1) {
+          flux[i][j][k][0] = u[i][j][k][1];
+          u21 = u[i][j][k][1] / u[i][j][k][0];
+          q = 0.50 * (u[i][j][k][1] * u[i][j][k][1] + u[i][j][k][2] * u[i][j][k][2] + u[i][j][k][3] * u[i][j][k][3]) / u[i][j][k][0];
+          flux[i][j][k][1] = u[i][j][k][1] * u21 + 0.40e+00 * (u[i][j][k][4] - q);
+          flux[i][j][k][2] = u[i][j][k][2] * u21;
+          flux[i][j][k][3] = u[i][j][k][3] * u21;
+          flux[i][j][k][4] = (1.40e+00 * u[i][j][k][4] - 0.40e+00 * q) * u21;
+        }","#pragma omp parallel for
+for (k = 1; k <= nz - 2; k += 1) {
+  flux[i][j][k][0] = u[i][j][k][1];
+  u21 = u[i][j][k][1] / u[i][j][k][0];
+  q = 0.50 * (u[i][j][k][1] * u[i][j][k][1] + u[i][j][k][2] * u[i][j][k][2] + u[i][j][k][3] * u[i][j][k][3]) / u[i][j][k][0];
+  flux[i][j][k][1] = u[i][j][k][1] * u21 + 0.40e+00 * (u[i][j][k][4] - q);
+  flux[i][j][k][2] = u[i][j][k][2] * u21;
+  flux[i][j][k][3] = u[i][j][k][3] * u21;
+  flux[i][j][k][4] = (1.40e+00 * u[i][j][k][4] - 0.40e+00 * q) * u21;
+}","#pragma omp parallel for private (q,u21,k)","#pragma omp parallel for private(u21, q)","#pragma omp parallel for private(u21, q)",4,4,
+56,./Benchmark-Test-2/3/sp-135.ll,"   #pragma rose_outline 
+  for (j = 0; j <= grid_points[1] - 1; j += 1) {
+    eta = ((double )j) * dnym1;
+	 #pragma rose_outline 
+    for (k = 0; k <= grid_points[2] - 1; k += 1) {
+      zeta = ((double )k) * dnzm1;
+      exact_solution(xi,eta,zeta,temp);
+      
+#pragma omp parallel for private (m) firstprivate (i)
+      for (m = 0; m <= 4; m += 1) {
+        u[m][i][j][k] = temp[m];
+      }
+    }
+  }",2,2,"
+  for (j = 0; j <= grid_points[1] - 1; j += 1) {
+    eta = ((double )j) * dnym1;
+
+    for (k = 0; k <= grid_points[2] - 1; k += 1) {
+      zeta = ((double )k) * dnzm1;
+      exact_solution(xi,eta,zeta,temp);
+      
+
+      for (m = 0; m <= 4; m += 1) {
+        u[m][i][j][k] = temp[m];
+      }
+    }
+  }",,"#pragma omp parallel for private(j, k, eta, zeta, temp)
+  for (i = 0; i <= grid_points[0] - 1; i += 1) {
+    for (j = 0; j <= grid_points[1] - 1; j += 1) {
+      eta = ((double )j) * dnym1;
+
+      for (k = 0; k <= grid_points[2] - 1; k += 1) {
+        zeta = ((double )k) * dnzm1;
+        exact_solution(xi,eta,zeta,temp);
+
+        for (m = 0; m <= 4; m += 1) {
+          u[m][i][j][k] = temp[m];
+        }
+      }
+    }
+  }",none,none,"#pragma omp parallel for private(j, k, m, eta, zeta, temp)",5,0,
+57,./Benchmark-Test-2/0/sp-178.ll,"//#pragma omp parallel for private (m)
+ #pragma rose_outline 
+  for (m = 0; m <= 4; m += 1) {
+    rms[m] = 0.0;
+  }",0,0,"
+
+  for (m = 0; m <= 4; m += 1) {
+    rms[m] = 0.0;
+  }","#pragma omp parallel for private(m)
+  for (m = 0; m <= 4; m += 1) {
+    rms[m] = 0.0;
+  }","#pragma omp parallel for
+  for (m = 0; m <= 4; m += 1) {
+    rms[m] = 0.0;
+  }",#pragma omp parallel for private (m),#pragma omp parallel for private(m),#pragma omp parallel for,5,4,
+58,./Benchmark-Test-2/0/sp-156.ll,"//#pragma omp parallel for private (m)
+         #pragma rose_outline 
+		for (m = 0; m <= 4; m += 1) {
+          ue[m][j] = dtemp[m];
+        }",0,0,"
+  
+		for (m = 0; m <= 4; m += 1) {
+          ue[m][j] = dtemp[m];
+        }","#pragma omp parallel for private(m)
+		for (m = 0; m <= 4; m += 1) {
+          ue[m][j] = dtemp[m];
+        }","#pragma omp parallel for
+for (m = 0; m <= 4; m += 1) {
+  ue[m][j] = dtemp[m];
+}",#pragma omp parallel for private (m),#pragma omp parallel for private(m),#pragma omp parallel for,5,4,
+59,./Benchmark-Test-2/3/mg-46.ll,"	  #pragma rose_outline
+      for (i1 = 1; i1 <= n1 - 1 - 1; i1 += 1) {
+        r[i3][i2][i1] = v[i3][i2][i1] - a[0] * u[i3][i2][i1] - a[2] * (u2[i1] + u1[i1 - 1] + u1[i1 + 1]) - a[3] * (u2[i1 - 1] + u2[i1 + 1]);
+/*--------------------------------------------------------------------
+c  Assume a(1) = 0      (Enable 2 lines below if a(1) not= 0)
+c---------------------------------------------------------------------
+c    >                     - a(1) * ( u(i1-1,i2,i3) + u(i1+1,i2,i3)
+c    >                              + u1(i1) )
+c-------------------------------------------------------------------*/
+      }",2,2,"
+      for (i1 = 1; i1 <= n1 - 1 - 1; i1 += 1) {
+        r[i3][i2][i1] = v[i3][i2][i1] - a[0] * u[i3][i2][i1] - a[2] * (u2[i1] + u1[i1 - 1] + u1[i1 + 1]) - a[3] * (u2[i1 - 1] + u2[i1 + 1]);
+/*--------------------------------------------------------------------
+c  Assume a(1) = 0      (Enable 2 lines below if a(1) not= 0)
+c---------------------------------------------------------------------
+c    >                     - a(1) * ( u(i1-1,i2,i3) + u(i1+1,i2,i3)
+c    >                              + u1(i1) )
+c-------------------------------------------------------------------*/
+      }",,"#pragma omp parallel for
+for (i1 = 1; i1 <= n1 - 1 - 1; i1 += 1) {
+  r[i3][i2][i1] = v[i3][i2][i1] - a[0] * u[i3][i2][i1] - a[2] * (u2[i1] + u1[i1 - 1] + u1[i1 + 1]) - a[3] * (u2[i1 - 1] + u2[i1 + 1]);
+}",none,none,#pragma omp parallel for,5,1,
+60,./Benchmark-Test-2/3/sp-57.ll,"   #pragma rose_outline 
+  for (m = 0; m <= 4; m += 1) {
+    xcrdif[m] = fabs((xcr[m] - xcrref[m]) / xcrref[m]);
+    xcedif[m] = fabs((xce[m] - xceref[m]) / xceref[m]);
+  }",2,2,"
+  for (m = 0; m <= 4; m += 1) {
+    xcrdif[m] = fabs((xcr[m] - xcrref[m]) / xcrref[m]);
+    xcedif[m] = fabs((xce[m] - xceref[m]) / xceref[m]);
+  }",,"#pragma omp parallel for
+  for (m = 0; m <= 4; m += 1) {
+    xcrdif[m] = fabs((xcr[m] - xcrref[m]) / xcrref[m]);
+    xcedif[m] = fabs((xce[m] - xceref[m]) / xceref[m]);
+  }",none,none,#pragma omp parallel for,5,1,
+61,./Benchmark-Test-2/3/mg-35.ll,"		#pragma rose_outline
+        for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+          u[2 * i3 + 1][2 * i2 + 1][2 * i1] = u[2 * i3 + 1][2 * i2 + 1][2 * i1] + 0.25 * z3[i1];
+          u[2 * i3 + 1][2 * i2 + 1][2 * i1 + 1] = u[2 * i3 + 1][2 * i2 + 1][2 * i1 + 1] + 0.125 * (z3[i1] + z3[i1 + 1]);
+        }",2,2,"	
+        for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+          u[2 * i3 + 1][2 * i2 + 1][2 * i1] = u[2 * i3 + 1][2 * i2 + 1][2 * i1] + 0.25 * z3[i1];
+          u[2 * i3 + 1][2 * i2 + 1][2 * i1 + 1] = u[2 * i3 + 1][2 * i2 + 1][2 * i1 + 1] + 0.125 * (z3[i1] + z3[i1 + 1]);
+        }",,"#pragma omp parallel for
+for (i1 = 0; i1 <= mm1 - 1 - 1; i1 += 1) {
+  u[2 * i3 + 1][2 * i2 + 1][2 * i1] = u[2 * i3 + 1][2 * i2 + 1][2 * i1] + 0.25 * z3[i1];
+  u[2 * i3 + 1][2 * i2 + 1][2 * i1 + 1] = u[2 * i3 + 1][2 * i2 + 1][2 * i1 + 1] + 0.125 * (z3[i1] + z3[i1 + 1]);
+}",none,none,#pragma omp parallel for,5,1,
+62,./Benchmark-Test-2/0/mg-1.ll,"//#pragma omp parallel for private (i1)
+      #pragma rose_outline
+	  for (i1 = 0; i1 <= n1 - 1; i1 += 1) {
+        z[i3][i2][i1] = 0.0;
+      }",0,2,"
+
+	  for (i1 = 0; i1 <= n1 - 1; i1 += 1) {
+        z[i3][i2][i1] = 0.0;
+      }",,"#pragma omp parallel for
+      for (i1 = 0; i1 <= n1 - 1; i1 += 1) {
+        z[i3][i2][i1] = 0.0;
+      }",#pragma omp parallel for private (i1),none,#pragma omp parallel for,0,1,
+63,./Benchmark-Test-2/0/sp-70.ll,"//#pragma omp parallel for private (j,k)
+ #pragma rose_outline        
+	   for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          
+#pragma omp parallel for private (k) firstprivate (dssp)
+          for (k = 3 * 1; k <= grid_points[2] - 3 - 1; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i][j][k - 2] - 4.0 * u[m][i][j][k - 1] + 6.0 * u[m][i][j][k] - 4.0 * u[m][i][j][k + 1] + u[m][i][j][k + 2]);
+          }
+        }",0,0,"
+
+	   for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          
+
+          for (k = 3 * 1; k <= grid_points[2] - 3 - 1; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i][j][k - 2] - 4.0 * u[m][i][j][k - 1] + 6.0 * u[m][i][j][k] - 4.0 * u[m][i][j][k + 1] + u[m][i][j][k + 2]);
+          }
+        }","#pragma omp parallel for private(j,k)
+	   for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          
+
+          for (k = 3 * 1; k <= grid_points[2] - 3 - 1; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i][j][k - 2] - 4.0 * u[m][i][j][k - 1] + 6.0 * u[m][i][j][k] - 4.0 * u[m][i][j][k + 1] + u[m][i][j][k + 2]);
+          }
+        }","#pragma omp parallel for private(j, k) shared(rhs, u)
+for (j = 1; j <= grid_points[1] - 2; j += 1) {
+  for (k = 3 * 1; k <= grid_points[2] - 3 - 1; k += 1) {
+    rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i][j][k - 2] - 4.0 * u[m][i][j][k - 1] + 6.0 * u[m][i][j][k] - 4.0 * u[m][i][j][k + 1] + u[m][i][j][k + 2]);
+  }
+}","#pragma omp parallel for private (j,k)","#pragma omp parallel for private(j,k)",#pragma omp parallel for collapse(2),5,1,
+64,./Benchmark-Test-2/3/bt-6.ll,"#pragma rose_outline
+    for (j = 1; j <= grid_points[1] - 1 - 1; j += 1) {
+/*--------------------------------------------------------------------
+c     multiply c(i,j,0) by b_inverse and copy back to c
+c     multiply rhs(0) by b_inverse(0) and copy to rhs
+c-------------------------------------------------------------------*/
+      binvcrhs(lhs[i][j][0][1],lhs[i][j][0][2],rhs[i][j][0]);
+    }",2,2,"
+    for (j = 1; j <= grid_points[1] - 1 - 1; j += 1) {
+/*--------------------------------------------------------------------
+c     multiply c(i,j,0) by b_inverse and copy back to c
+c     multiply rhs(0) by b_inverse(0) and copy to rhs
+c-------------------------------------------------------------------*/
+      binvcrhs(lhs[i][j][0][1],lhs[i][j][0][2],rhs[i][j][0]);
+    }",,"#pragma omp parallel for
+    for (j = 1; j <= grid_points[1] - 1 - 1; j += 1) {
+      binvcrhs(lhs[i][j][0][1],lhs[i][j][0][2],rhs[i][j][0]);
+    }",none,none,#pragma omp parallel for,5,1,
+65,./Benchmark-Test-2/0/sp-180.ll,"//#pragma omp parallel for private (j,k)
+       #pragma rose_outline 
+	  for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        
+//#pragma omp parallel for private (k)
+         #pragma rose_outline 
+		for (k = 1; k <= grid_points[2] - 2; k += 1) {
+          u[m][i][j][k] = u[m][i][j][k] + rhs[m][i][j][k];
+        }
+      }",0,0,"
+
+	  for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        
+		for (k = 1; k <= grid_points[2] - 2; k += 1) {
+          u[m][i][j][k] = u[m][i][j][k] + rhs[m][i][j][k];
+        }
+      }","#pragma omp parallel for private(j, k)
+	  for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        
+		for (k = 1; k <= grid_points[2] - 2; k += 1) {
+          u[m][i][j][k] = u[m][i][j][k] + rhs[m][i][j][k];
+        }
+      }","#pragma omp parallel for private(j, k) shared(u, rhs)
+      for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        for (k = 1; k <= grid_points[2] - 2; k += 1) {
+          u[m][i][j][k] = u[m][i][j][k] + rhs[m][i][j][k];
+        }
+      }","#pragma omp parallel for private (j,k)","#pragma omp parallel for private(j, k)",#pragma omp parallel for collapse(2),5,3,
+66,./Benchmark-Test-2/0/sp-2.ll,"//#pragma omp parallel for private (k1,k2,i,j,k)
+ #pragma rose_outline   
+  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+        
+//#pragma omp parallel for private (k1,k2,j,k)
+         #pragma rose_outline 
+		for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          for (k = grid_points[2] - 3; k >= 0; k += -1) {
+            k1 = k + 1;
+            k2 = k + 2;
+            rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1] - lhs[n + 4][i][j][k] * rhs[m][i][j][k2];
+          }
+        }
+      }",0,0,"
+  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+        
+		for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          for (k = grid_points[2] - 3; k >= 0; k += -1) {
+            k1 = k + 1;
+            k2 = k + 2;
+            rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1] - lhs[n + 4][i][j][k] * rhs[m][i][j][k2];
+          }
+        }
+      }","#pragma omp parallel for private(i, j, k, k1, k2)
+  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+        
+		for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          for (k = grid_points[2] - 3; k >= 0; k += -1) {
+            k1 = k + 1;
+            k2 = k + 2;
+            rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1] - lhs[n + 4][i][j][k] * rhs[m][i][j][k2];
+          }
+        }
+      }","#pragma omp parallel for private(i, j, k, k1, k2)
+for (i = 1; i <= grid_points[0] - 2; i += 1) {
+    for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        for (k = grid_points[2] - 3; k >= 0; k += -1) {
+            k1 = k + 1;
+            k2 = k + 2;
+            rhs[m][i][j][k] = rhs[m][i][j][k] - lhs[n + 3][i][j][k] * rhs[m][i][j][k1] - lhs[n + 4][i][j][k] * rhs[m][i][j][k2];
+        }
+    }
+}","#pragma omp parallel for private (k1,k2,i,j,k)","#pragma omp parallel for private(i, j, k, k1, k2)","#pragma omp parallel for collapse(3) private(i, j, k, k1, k2)",5,4,
+67,./Benchmark-Test-2/0/sp-53.ll,"//#pragma omp parallel for private (m)
+ #pragma rose_outline   
+  for (m = 0; m <= 2; m += 1) {
+            rhs[m][i1][j][k] = rhs[m][i1][j][k] - lhs[n + 1][i1][j][k] * rhs[m][i][j][k];
+          }",0,0,"
+  for (m = 0; m <= 2; m += 1) {
+            rhs[m][i1][j][k] = rhs[m][i1][j][k] - lhs[n + 1][i1][j][k] * rhs[m][i][j][k];
+          }","#pragma omp parallel for private(m)
+  for (m = 0; m <= 2; m += 1) {
+            rhs[m][i1][j][k] = rhs[m][i1][j][k] - lhs[n + 1][i1][j][k] * rhs[m][i][j][k];
+  }","#pragma omp parallel for
+  for (m = 0; m <= 2; m += 1) {
+    rhs[m][i1][j][k] = rhs[m][i1][j][k] - lhs[n + 1][i1][j][k] * rhs[m][i][j][k];
+  }",#pragma omp parallel for private (m),#pragma omp parallel for private(m),#pragma omp parallel for,5,4,
+68,./Benchmark-Test-2/3/sp-168.ll," #pragma rose_outline 
+      for (k = 0; k <= grid_points[2] - 2; k += 1) {
+        
+//#pragma omp parallel for private (add,m)
+         #pragma rose_outline 
+		for (m = 0; m <= 4; m += 1) {
+          add = rhs[m][i][j][k];
+          rms[m] = rms[m] + add * add;
+        }
+      }",2,2,"
+      for (k = 0; k <= grid_points[2] - 2; k += 1) {
+        
+		for (m = 0; m <= 4; m += 1) {
+          add = rhs[m][i][j][k];
+          rms[m] = rms[m] + add * add;
+        }
+      }",,"#pragma omp parallel for private(k, m, add) reduction(+: rms)
+for (k = 0; k <= grid_points[2] - 2; k += 1) {
+  for (m = 0; m <= 4; m += 1) {
+    add = rhs[m][i][j][k];
+    rms[m] = rms[m] + add * add;
+  }
+}",none,none,#pragma omp parallel for reduction(+:rms[:5]),5,0,
+69,./Benchmark-Test-2/0/sp-91.ll,"//#pragma omp parallel for private (vijk,vp1,vm1,i,j,k)
+ #pragma rose_outline   
+  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+      
+//#pragma omp parallel for private (vijk,vp1,vm1,j,k)
+       #pragma rose_outline 
+	  for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        
+#pragma omp parallel for private (vijk,vp1,vm1,k) firstprivate (ty2,yycon2,yycon3,yycon4,yycon5,dy1ty1,dy2ty1,dy3ty1,dy4ty1,dy5ty1,c1,c2,con43)
+        for (k = 1; k <= grid_points[2] - 2; k += 1) {
+          vijk = vs[i][j][k];
+          vp1 = vs[i][j + 1][k];
+          vm1 = vs[i][j - 1][k];
+          rhs[0][i][j][k] = rhs[0][i][j][k] + dy1ty1 * (u[0][i][j + 1][k] - 2.0 * u[0][i][j][k] + u[0][i][j - 1][k]) - ty2 * (u[2][i][j + 1][k] - u[2][i][j - 1][k]);
+          rhs[1][i][j][k] = rhs[1][i][j][k] + dy2ty1 * (u[1][i][j + 1][k] - 2.0 * u[1][i][j][k] + u[1][i][j - 1][k]) + yycon2 * (us[i][j + 1][k] - 2.0 * us[i][j][k] + us[i][j - 1][k]) - ty2 * (u[1][i][j + 1][k] * vp1 - u[1][i][j - 1][k] * vm1);
+          rhs[2][i][j][k] = rhs[2][i][j][k] + dy3ty1 * (u[2][i][j + 1][k] - 2.0 * u[2][i][j][k] + u[2][i][j - 1][k]) + yycon2 * con43 * (vp1 - 2.0 * vijk + vm1) - ty2 * (u[2][i][j + 1][k] * vp1 - u[2][i][j - 1][k] * vm1 + (u[4][i][j + 1][k] - square[i][j + 1][k] - u[4][i][j - 1][k] + square[i][j - 1][k]) * c2);
+          rhs[3][i][j][k] = rhs[3][i][j][k] + dy4ty1 * (u[3][i][j + 1][k] - 2.0 * u[3][i][j][k] + u[3][i][j - 1][k]) + yycon2 * (ws[i][j + 1][k] - 2.0 * ws[i][j][k] + ws[i][j - 1][k]) - ty2 * (u[3][i][j + 1][k] * vp1 - u[3][i][j - 1][k] * vm1);
+          rhs[4][i][j][k] = rhs[4][i][j][k] + dy5ty1 * (u[4][i][j + 1][k] - 2.0 * u[4][i][j][k] + u[4][i][j - 1][k]) + yycon3 * (qs[i][j + 1][k] - 2.0 * qs[i][j][k] + qs[i][j - 1][k]) + yycon4 * (vp1 * vp1 - 2.0 * vijk * vijk + vm1 * vm1) + yycon5 * (u[4][i][j + 1][k] * rho_i[i][j + 1][k] - 2.0 * u[4][i][j][k] * rho_i[i][j][k] + u[4][i][j - 1][k] * rho_i[i][j - 1][k]) - ty2 * ((c1 * u[4][i][j + 1][k] - c2 * square[i][j + 1][k]) * vp1 - (c1 * u[4][i][j - 1][k] - c2 * square[i][j - 1][k]) * vm1);
+        }
+      }
+    }",0,0,"  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+      
+	  for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        
+
+        for (k = 1; k <= grid_points[2] - 2; k += 1) {
+          vijk = vs[i][j][k];
+          vp1 = vs[i][j + 1][k];
+          vm1 = vs[i][j - 1][k];
+          rhs[0][i][j][k] = rhs[0][i][j][k] + dy1ty1 * (u[0][i][j + 1][k] - 2.0 * u[0][i][j][k] + u[0][i][j - 1][k]) - ty2 * (u[2][i][j + 1][k] - u[2][i][j - 1][k]);
+          rhs[1][i][j][k] = rhs[1][i][j][k] + dy2ty1 * (u[1][i][j + 1][k] - 2.0 * u[1][i][j][k] + u[1][i][j - 1][k]) + yycon2 * (us[i][j + 1][k] - 2.0 * us[i][j][k] + us[i][j - 1][k]) - ty2 * (u[1][i][j + 1][k] * vp1 - u[1][i][j - 1][k] * vm1);
+          rhs[2][i][j][k] = rhs[2][i][j][k] + dy3ty1 * (u[2][i][j + 1][k] - 2.0 * u[2][i][j][k] + u[2][i][j - 1][k]) + yycon2 * con43 * (vp1 - 2.0 * vijk + vm1) - ty2 * (u[2][i][j + 1][k] * vp1 - u[2][i][j - 1][k] * vm1 + (u[4][i][j + 1][k] - square[i][j + 1][k] - u[4][i][j - 1][k] + square[i][j - 1][k]) * c2);
+          rhs[3][i][j][k] = rhs[3][i][j][k] + dy4ty1 * (u[3][i][j + 1][k] - 2.0 * u[3][i][j][k] + u[3][i][j - 1][k]) + yycon2 * (ws[i][j + 1][k] - 2.0 * ws[i][j][k] + ws[i][j - 1][k]) - ty2 * (u[3][i][j + 1][k] * vp1 - u[3][i][j - 1][k] * vm1);
+          rhs[4][i][j][k] = rhs[4][i][j][k] + dy5ty1 * (u[4][i][j + 1][k] - 2.0 * u[4][i][j][k] + u[4][i][j - 1][k]) + yycon3 * (qs[i][j + 1][k] - 2.0 * qs[i][j][k] + qs[i][j - 1][k]) + yycon4 * (vp1 * vp1 - 2.0 * vijk * vijk + vm1 * vm1) + yycon5 * (u[4][i][j + 1][k] * rho_i[i][j + 1][k] - 2.0 * u[4][i][j][k] * rho_i[i][j][k] + u[4][i][j - 1][k] * rho_i[i][j - 1][k]) - ty2 * ((c1 * u[4][i][j + 1][k] - c2 * square[i][j + 1][k]) * vp1 - (c1 * u[4][i][j - 1][k] - c2 * square[i][j - 1][k]) * vm1);
+        }
+      }
+    }","#pragma omp parallel for private(i, j, k, vijk, vp1, vm1)
+    for (i = 1; i <= grid_points[0] - 2; i += 1) {
+        for (j = 1; j <= grid_points[1] - 2; j += 1) {
+            for (k = 1; k <= grid_points[2] - 2; k += 1) {
+                vijk = vs[i][j][k];
+                vp1 = vs[i][j + 1][k];
+                vm1 = vs[i][j - 1][k];
+                rhs[0][i][j][k] = rhs[0][i][j][k] + dy1ty1 * (u[0][i][j + 1][k] - 2.0 * u[0][i][j][k] + u[0][i][j - 1][k]) - ty2 * (u[2][i][j + 1][k] - u[2][i][j - 1][k]);
+                rhs[1][i][j][k] = rhs[1][i][j][k] + dy2ty1 * (u[1][i][j + 1][k] - 2.0 * u[1][i][j][k] + u[1][i][j - 1][k]) + yycon2 * (us[i][j + 1][k] - 2.0 * us[i][j][k] + us[i][j - 1][k]) - ty2 * (u[1][i][j + 1][k] * vp1 - u[1][i][j - 1][k] * vm1);
+                rhs[2][i][j][k] = rhs[2][i][j][k] + dy3ty1 * (u[2][i][j + 1][k] - 2.0 * u[2][i][j][k] + u[2][i][j - 1][k]) + yycon2 * con43 * (vp1 - 2.0 * vijk + vm1) - ty2 * (u[2][i][j + 1][k] * vp1 - u[2][i][j - 1][k] * vm1 + (u[4][i][j + 1][k] - square[i][j + 1][k] - u[4][i][j - 1][k] + square[i][j - 1][k]) * c2);
+                rhs[3][i][j][k] = rhs[3][i][j][k] + dy4ty1 * (u[3][i][j + 1][k] - 2.0 * u[3][i][j][k] + u[3][i][j - 1][k]) + yycon2 * (ws[i][j + 1][k] - 2.0 * ws[i][j][k] + ws[i][j - 1][k]) - ty2 * (u[3][i][j + 1][k] * vp1 - u[3][i][j - 1][k] * vm1);
+                rhs[4][i][j][k] = rhs[4][i][j][k] + dy5ty1 * (u[4][i][j + 1][k] - 2.0 * u[4][i][j][k] + u[4][i][j - 1][k]) + yycon3 * (qs[i][j + 1][k] - 2.0 * qs[i][j][k] + qs[i][j - 1][k]) + yycon4 * (vp1 * vp1 - 2.0 * vijk * vijk + vm1 * vm1) + yycon5 * (u[4][i][j + 1][k] * rho_i[i][j + 1][k] - 2.0 * u[4][i][j][k] * rho_i[i][j][k] + u[4][i][j - 1][k] * rho_i[i][j - 1][k]) - ty2 * ((c1 * u[4][i][j + 1][k] - c2 * square[i][j + 1][k]) * vp1 - (c1 * u[4][i][j - 1][k] - c2 * square[i][j - 1][k]) * vm1);
+            }
+        }
+    }","#pragma omp parallel for private(i,j,k,vijk,vp1,vm1) shared(grid_points,u,vs,rhs,dy1ty1,ty2,dy2ty1,yycon2,us,dy3ty1,yycon3,yycon4,yycon5,qs,rho_i,c1,c2,square,ws,dy4ty1,dy5ty1)
+    for (i = 1; i <= grid_points[0] - 2; i += 1) {
+        for (j = 1; j <= grid_points[1] - 2; j += 1) {
+            for (k = 1; k <= grid_points[2] - 2; k += 1) {
+                vijk = vs[i][j][k];
+                vp1 = vs[i][j + 1][k];
+                vm1 = vs[i][j - 1][k];
+                rhs[0][i][j][k] = rhs[0][i][j][k] + dy1ty1 * (u[0][i][j + 1][k] - 2.0 * u[0][i][j][k] + u[0][i][j - 1][k]) - ty2 * (u[2][i][j + 1][k] - u[2][i][j - 1][k]);
+                rhs[1][i][j][k] = rhs[1][i][j][k] + dy2ty1 * (u[1][i][j + 1][k] - 2.0 * u[1][i][j][k] + u[1][i][j - 1][k]) + yycon2 * (us[i][j + 1][k] - 2.0 * us[i][j][k] + us[i][j - 1][k]) - ty2 * (u[1][i][j + 1][k] * vp1 - u[1][i][j - 1][k] * vm1);
+                rhs[2][i][j][k] = rhs[2][i][j][k] + dy3ty1 * (u[2][i][j + 1][k] - 2.0 * u[2][i][j][k] + u[2][i][j - 1][k]) + yycon2 * con43 * (vp1 - 2.0 * vijk + vm1) - ty2 * (u[2][i][j + 1][k] * vp1 - u[2][i][j - 1][k] * vm1 + (u[4][i][j + 1][k] - square[i][j + 1][k] - u[4][i][j - 1][k] + square[i][j - 1][k]) * c2);
+                rhs[3][i][j][k] = rhs[3][i][j][k] + dy4ty1 * (u[3][i][j + 1][k] - 2.0 * u[3][i][j][k] + u[3][i][j - 1][k]) + yycon2 * (ws[i][j + 1][k] - 2.0 * ws[i][j][k] + ws[i][j - 1][k]) - ty2 * (u[3][i][j + 1][k] * vp1 - u[3][i][j - 1][k] * vm1);
+                rhs[4][i][j][k] = rhs[4][i][j][k] + dy5ty1 * (u[4][i][j + 1][k] - 2.0 * u[4][i][j][k] + u[4][i][j - 1][k]) + yycon3 * (qs[i][j + 1][k] - 2.0 * qs[i][j][k] + qs[i][j - 1][k]) + yycon4 * (vp1 * vp1 - 2.0 * vijk * vijk + vm1 * vm1) + yycon5 * (u[4][i][j + 1][k] * rho_i[i][j + 1][k] - 2.0 * u[4][i][j][k] * rho_i[i][j][k] + u[4][i][j - 1][k] * rho_i[i][j - 1][k]) - ty2 * ((c1 * u[4][i][j + 1][k] - c2 * square[i][j + 1][k]) * vp1 - (c1 * u[4][i][j - 1][k] - c2 * square[i][j - 1][k]) * vm1);
+            }
+        }
+    }","#pragma omp parallel for private (vijk,vp1,vm1,i,j,k)","#pragma omp parallel for private(i, j, k, vijk, vp1, vm1)","#pragma omp parallel for collapse(3) private(i, j, k, vijk, vp1, vm1)",5,4,semantic
+70,./Benchmark-Test-2/3/mg-51.ll,"		#pragma rose_outline
+      for (i1 = 0; i1 <= n1 - 1; i1 += 1) {
+        r1[i1] = r[i3][i2 - 1][i1] + r[i3][i2 + 1][i1] + r[i3 - 1][i2][i1] + r[i3 + 1][i2][i1];
+        r2[i1] = r[i3 - 1][i2 - 1][i1] + r[i3 - 1][i2 + 1][i1] + r[i3 + 1][i2 - 1][i1] + r[i3 + 1][i2 + 1][i1];
+      }",2,2,"
+      for (i1 = 0; i1 <= n1 - 1; i1 += 1) {
+        r1[i1] = r[i3][i2 - 1][i1] + r[i3][i2 + 1][i1] + r[i3 - 1][i2][i1] + r[i3 + 1][i2][i1];
+        r2[i1] = r[i3 - 1][i2 - 1][i1] + r[i3 - 1][i2 + 1][i1] + r[i3 + 1][i2 - 1][i1] + r[i3 + 1][i2 + 1][i1];
+      }",,"#pragma omp parallel for
+      for (i1 = 0; i1 <= n1 - 1; i1 += 1) {
+        r1[i1] = r[i3][i2 - 1][i1] + r[i3][i2 + 1][i1] + r[i3 - 1][i2][i1] + r[i3 + 1][i2][i1];
+        r2[i1] = r[i3 - 1][i2 - 1][i1] + r[i3 - 1][i2 + 1][i1] + r[i3 + 1][i2 - 1][i1] + r[i3 + 1][i2 + 1][i1];
+      }",none,none,#pragma omp parallel for,5,1,
+71,./Benchmark-Test-2/0/lu-48.ll,"//#pragma omp parallel for private (k)
+    #pragma rose_outline
+	for (k = 0; k <= 65; k += 1) {
+      phi1[i][k] = 0.0;
+      phi2[i][k] = 0.0;
+    }",0,0,"
+   
+	for (k = 0; k <= 65; k += 1) {
+      phi1[i][k] = 0.0;
+      phi2[i][k] = 0.0;
+    }","#pragma omp parallel for private(k)
+	for (k = 0; k <= 65; k += 1) {
+      phi1[i][k] = 0.0;
+      phi2[i][k] = 0.0;
+    }","#pragma omp parallel for
+    for (k = 0; k <= 65; k += 1) {
+      phi1[i][k] = 0.0;
+      phi2[i][k] = 0.0;
+    }",#pragma omp parallel for private (k),#pragma omp parallel for private(k),#pragma omp parallel for,5,4,
+72,./Benchmark-Test-2/3/bt-15.ll,"  #pragma rose_outline
+  for (m = 0; m <= 4; m += 1) {
+    if (( *class) == 'U') {
+      printf(""          %2d%20.13e\n"",m,xcr[m]);
+    }
+     else if (xcrdif[m] > epsilon) {
+       *verified = 0;
+      printf("" FAILURE: %2d%20.13e%20.13e%20.13e\n"",m,xcr[m],xcrref[m],xcrdif[m]);
+    }
+     else {
+      printf(""          %2d%20.13e%20.13e%20.13e\n"",m,xcr[m],xcrref[m],xcrdif[m]);
+    }
+  }",2,2,"
+  for (m = 0; m <= 4; m += 1) {
+    if (( *class) == 'U') {
+      printf(""          %2d%20.13e\n"",m,xcr[m]);
+    }
+     else if (xcrdif[m] > epsilon) {
+       *verified = 0;
+      printf("" FAILURE: %2d%20.13e%20.13e%20.13e\n"",m,xcr[m],xcrref[m],xcrdif[m]);
+    }
+     else {
+      printf(""          %2d%20.13e%20.13e%20.13e\n"",m,xcr[m],xcrref[m],xcrdif[m]);
+    }
+  }",,"#pragma omp parallel for
+  for (m = 0; m <= 4; m += 1) {
+    if ((*class) == 'U') {
+      printf(""          %2d%20.13e\n"", m, xcr[m]);
+    }
+    else if (xcrdif[m] > epsilon) {
+      *verified = 0;
+      printf("" FAILURE: %2d%20.13e%20.13e%20.13e\n"", m, xcr[m], xcrref[m], xcrdif[m]);
+    }
+    else {
+      printf(""          %2d%20.13e%20.13e%20.13e\n"", m, xcr[m], xcrref[m], xcrdif[m]);
+    }
+  }",none,none,#pragma omp parallel for,5,1,
+73,./Benchmark-Test-2/3/bt-4.ll,"#pragma rose_outline
+      for (j = 1; j <= grid_points[1] - 1 - 1; j += 1) {
+		  #pragma rose_outline
+/*--------------------------------------------------------------------
+c     subtract A*lhs_vector(k-1) from lhs_vector(k)
+c     
+c     rhs(k) = rhs(k) - A*rhs(k-1)
+c-------------------------------------------------------------------*/
+        matvec_sub(lhs[i][j][k][0],rhs[i][j][k - 1],rhs[i][j][k]);
+/*--------------------------------------------------------------------
+c     B(k) = B(k) - C(k-1)*A(k)
+c     call matmul_sub(aa,i,j,k,c,cc,i,j,k-1,c,BB,i,j,k)
+c-------------------------------------------------------------------*/
+        matmul_sub(lhs[i][j][k][0],lhs[i][j][k - 1][2],lhs[i][j][k][1]);
+/*--------------------------------------------------------------------
+c     multiply c(i,j,k) by b_inverse and copy back to c
+c     multiply rhs(i,j,1) by b_inverse(i,j,1) and copy to rhs
+c-------------------------------------------------------------------*/
+        binvcrhs(lhs[i][j][k][1],lhs[i][j][k][2],rhs[i][j][k]);
+      }",2,2,"
+      for (j = 1; j <= grid_points[1] - 1 - 1; j += 1) {
+		
+/*--------------------------------------------------------------------
+c     subtract A*lhs_vector(k-1) from lhs_vector(k)
+c     
+c     rhs(k) = rhs(k) - A*rhs(k-1)
+c-------------------------------------------------------------------*/
+        matvec_sub(lhs[i][j][k][0],rhs[i][j][k - 1],rhs[i][j][k]);
+/*--------------------------------------------------------------------
+c     B(k) = B(k) - C(k-1)*A(k)
+c     call matmul_sub(aa,i,j,k,c,cc,i,j,k-1,c,BB,i,j,k)
+c-------------------------------------------------------------------*/
+        matmul_sub(lhs[i][j][k][0],lhs[i][j][k - 1][2],lhs[i][j][k][1]);
+/*--------------------------------------------------------------------
+c     multiply c(i,j,k) by b_inverse and copy back to c
+c     multiply rhs(i,j,1) by b_inverse(i,j,1) and copy to rhs
+c-------------------------------------------------------------------*/
+        binvcrhs(lhs[i][j][k][1],lhs[i][j][k][2],rhs[i][j][k]);
+      }",,"#pragma omp parallel for
+for (j = 1; j <= grid_points[1] - 1 - 1; j += 1) {
+    matvec_sub(lhs[i][j][k][0],rhs[i][j][k - 1],rhs[i][j][k]);
+    matmul_sub(lhs[i][j][k][0],lhs[i][j][k - 1][2],lhs[i][j][k][1]);
+    binvcrhs(lhs[i][j][k][1],lhs[i][j][k][2],rhs[i][j][k]);
+}",none,none,#pragma omp parallel for private(j),5,0,
+74,./Benchmark-Test-2/0/lu-32.ll,"//#pragma omp parallel for private (tmp,u21k,u31k,u41k,u51k,u21km1,u31km1,u41km1,u51km1,k)
+        #pragma rose_outline
+		for (k = 1; k <= nz - 1; k += 1) {
+          tmp = 1.0 / u[i][j][k][0];
+          u21k = tmp * u[i][j][k][1];
+          u31k = tmp * u[i][j][k][2];
+          u41k = tmp * u[i][j][k][3];
+          u51k = tmp * u[i][j][k][4];
+          tmp = 1.0 / u[i][j][k - 1][0];
+          u21km1 = tmp * u[i][j][k - 1][1];
+          u31km1 = tmp * u[i][j][k - 1][2];
+          u41km1 = tmp * u[i][j][k - 1][3];
+          u51km1 = tmp * u[i][j][k - 1][4];
+          flux[i][j][k][1] = tz3 * (u21k - u21km1);
+          flux[i][j][k][2] = tz3 * (u31k - u31km1);
+          flux[i][j][k][3] = 4.0 / 3.0 * tz3 * (u41k - u41km1);
+          flux[i][j][k][4] = 0.50 * (1.0 - 1.40e+00 * 1.40e+00) * tz3 * (u21k * u21k + u31k * u31k + u41k * u41k - (u21km1 * u21km1 + u31km1 * u31km1 + u41km1 * u41km1)) + 1.0 / 6.0 * tz3 * (u41k * u41k - u41km1 * u41km1) + 1.40e+00 * 1.40e+00 * tz3 * (u51k - u51km1);
+        }",0,0,"
+     
+		for (k = 1; k <= nz - 1; k += 1) {
+          tmp = 1.0 / u[i][j][k][0];
+          u21k = tmp * u[i][j][k][1];
+          u31k = tmp * u[i][j][k][2];
+          u41k = tmp * u[i][j][k][3];
+          u51k = tmp * u[i][j][k][4];
+          tmp = 1.0 / u[i][j][k - 1][0];
+          u21km1 = tmp * u[i][j][k - 1][1];
+          u31km1 = tmp * u[i][j][k - 1][2];
+          u41km1 = tmp * u[i][j][k - 1][3];
+          u51km1 = tmp * u[i][j][k - 1][4];
+          flux[i][j][k][1] = tz3 * (u21k - u21km1);
+          flux[i][j][k][2] = tz3 * (u31k - u31km1);
+          flux[i][j][k][3] = 4.0 / 3.0 * tz3 * (u41k - u41km1);
+          flux[i][j][k][4] = 0.50 * (1.0 - 1.40e+00 * 1.40e+00) * tz3 * (u21k * u21k + u31k * u31k + u41k * u41k - (u21km1 * u21km1 + u31km1 * u31km1 + u41km1 * u41km1)) + 1.0 / 6.0 * tz3 * (u41k * u41k - u41km1 * u41km1) + 1.40e+00 * 1.40e+00 * tz3 * (u51k - u51km1);
+        }","#pragma omp parallel for private(k, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1)
+		for (k = 1; k <= nz - 1; k += 1) {
+          tmp = 1.0 / u[i][j][k][0];
+          u21k = tmp * u[i][j][k][1];
+          u31k = tmp * u[i][j][k][2];
+          u41k = tmp * u[i][j][k][3];
+          u51k = tmp * u[i][j][k][4];
+          tmp = 1.0 / u[i][j][k - 1][0];
+          u21km1 = tmp * u[i][j][k - 1][1];
+          u31km1 = tmp * u[i][j][k - 1][2];
+          u41km1 = tmp * u[i][j][k - 1][3];
+          u51km1 = tmp * u[i][j][k - 1][4];
+          flux[i][j][k][1] = tz3 * (u21k - u21km1);
+          flux[i][j][k][2] = tz3 * (u31k - u31km1);
+          flux[i][j][k][3] = 4.0 / 3.0 * tz3 * (u41k - u41km1);
+          flux[i][j][k][4] = 0.50 * (1.0 - 1.40e+00 * 1.40e+00) * tz3 * (u21k * u21k + u31k * u31k + u41k * u41k - (u21km1 * u21km1 + u31km1 * u31km1 + u41km1 * u41km1)) + 1.0 / 6.0 * tz3 * (u41k * u41k - u41km1 * u41km1) + 1.40e+00 * 1.40e+00 * tz3 * (u51k - u51km1);
+        }","#pragma omp parallel for
+for (k = 1; k <= nz - 1; k += 1) {
+  tmp = 1.0 / u[i][j][k][0];
+  u21k = tmp * u[i][j][k][1];
+  u31k = tmp * u[i][j][k][2];
+  u41k = tmp * u[i][j][k][3];
+  u51k = tmp * u[i][j][k][4];
+  tmp = 1.0 / u[i][j][k - 1][0];
+  u21km1 = tmp * u[i][j][k - 1][1];
+  u31km1 = tmp * u[i][j][k - 1][2];
+  u41km1 = tmp * u[i][j][k - 1][3];
+  u51km1 = tmp * u[i][j][k - 1][4];
+  flux[i][j][k][1] = tz3 * (u21k - u21km1);
+  flux[i][j][k][2] = tz3 * (u31k - u31km1);
+  flux[i][j][k][3] = 4.0 / 3.0 * tz3 * (u41k - u41km1);
+  flux[i][j][k][4] = 0.50 * (1.0 - 1.40e+00 * 1.40e+00) * tz3 * (u21k * u21k + u31k * u31k + u41k * u41k - (u21km1 * u21km1 + u31km1 * u31km1 + u41km1 * u41km1)) + 1.0 / 6.0 * tz3 * (u41k * u41k - u41km1 * u41km1) + 1.40e+00 * 1.40e+00 * tz3 * (u51k - u51km1);
+}","#pragma omp parallel for private (tmp,u21k,u31k,u41k,u51k,u21km1,u31km1,u41km1,u51km1,k)","#pragma omp parallel for private(k, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1)","#pragma omp parallel for private(k, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1)",5,5,semantic
+75,./Benchmark-Test-2/0/sp-60.ll,"//#pragma omp parallel for private (t1,t2,t3,ac,xvel,yvel,zvel,r1,r2,r3,r4,r5,btuz,acinv,ac2u,uzik1,j,k)
+     #pragma rose_outline 
+	for (j = 1; j <= grid_points[1] - 2; j += 1) {
+      
+#pragma omp parallel for private (t1,t2,t3,ac,xvel,yvel,zvel,r1,r2,r3,r4,r5,btuz,acinv,ac2u,uzik1,k) firstprivate (bt,c2iv)
+      for (k = 1; k <= grid_points[2] - 2; k += 1) {
+        xvel = us[i][j][k];
+        yvel = vs[i][j][k];
+        zvel = ws[i][j][k];
+        ac = speed[i][j][k];
+        acinv = ainv[i][j][k];
+        ac2u = ac * ac;
+        r1 = rhs[0][i][j][k];
+        r2 = rhs[1][i][j][k];
+        r3 = rhs[2][i][j][k];
+        r4 = rhs[3][i][j][k];
+        r5 = rhs[4][i][j][k];
+        uzik1 = u[0][i][j][k];
+        btuz = bt * uzik1;
+        t1 = btuz * acinv * (r4 + r5);
+        t2 = r3 + t1;
+        t3 = btuz * (r4 - r5);
+        rhs[0][i][j][k] = t2;
+        rhs[1][i][j][k] = -uzik1 * r2 + xvel * t2;
+        rhs[2][i][j][k] = uzik1 * r1 + yvel * t2;
+        rhs[3][i][j][k] = zvel * t2 + t3;
+        rhs[4][i][j][k] = uzik1 * (-xvel * r2 + yvel * r1) + qs[i][j][k] * t2 + c2iv * ac2u * t1 + zvel * t3;
+      }
+    }",0,0,"
+
+	for (j = 1; j <= grid_points[1] - 2; j += 1) {
+      
+
+      for (k = 1; k <= grid_points[2] - 2; k += 1) {
+        xvel = us[i][j][k];
+        yvel = vs[i][j][k];
+        zvel = ws[i][j][k];
+        ac = speed[i][j][k];
+        acinv = ainv[i][j][k];
+        ac2u = ac * ac;
+        r1 = rhs[0][i][j][k];
+        r2 = rhs[1][i][j][k];
+        r3 = rhs[2][i][j][k];
+        r4 = rhs[3][i][j][k];
+        r5 = rhs[4][i][j][k];
+        uzik1 = u[0][i][j][k];
+        btuz = bt * uzik1;
+        t1 = btuz * acinv * (r4 + r5);
+        t2 = r3 + t1;
+        t3 = btuz * (r4 - r5);
+        rhs[0][i][j][k] = t2;
+        rhs[1][i][j][k] = -uzik1 * r2 + xvel * t2;
+        rhs[2][i][j][k] = uzik1 * r1 + yvel * t2;
+        rhs[3][i][j][k] = zvel * t2 + t3;
+        rhs[4][i][j][k] = uzik1 * (-xvel * r2 + yvel * r1) + qs[i][j][k] * t2 + c2iv * ac2u * t1 + zvel * t3;
+      }
+    }","#pragma omp parallel for private(j, k, xvel, yvel, zvel, ac, acinv, ac2u, r1, r2, r3, r4, r5, uzik1, btuz, t1, t2, t3)
+	for (j = 1; j <= grid_points[1] - 2; j += 1) {
+      for (k = 1; k <= grid_points[2] - 2; k += 1) {
+        xvel = us[i][j][k];
+        yvel = vs[i][j][k];
+        zvel = ws[i][j][k];
+        ac = speed[i][j][k];
+        acinv = ainv[i][j][k];
+        ac2u = ac * ac;
+        r1 = rhs[0][i][j][k];
+        r2 = rhs[1][i][j][k];
+        r3 = rhs[2][i][j][k];
+        r4 = rhs[3][i][j][k];
+        r5 = rhs[4][i][j][k];
+        uzik1 = u[0][i][j][k];
+        btuz = bt * uzik1;
+        t1 = btuz * acinv * (r4 + r5);
+        t2 = r3 + t1;
+        t3 = btuz * (r4 - r5);
+        rhs[0][i][j][k] = t2;
+        rhs[1][i][j][k] = -uzik1 * r2 + xvel * t2;
+        rhs[2][i][j][k] = uzik1 * r1 + yvel * t2;
+        rhs[3][i][j][k] = zvel * t2 + t3;
+        rhs[4][i][j][k] = uzik1 * (-xvel * r2 + yvel * r1) + qs[i][j][k] * t2 + c2iv * ac2u * t1 + zvel * t3;
+      }
+    }","#pragma omp parallel for private(j, k, xvel, yvel, zvel, ac, acinv, ac2u, r1, r2, r3, r4, r5, uzik1, btuz, t1, t2, t3)
+    for (i = 1; i <= grid_points[0] - 2; i += 1) {
+        for (j = 1; j <= grid_points[1] - 2; j += 1) {
+            for (k = 1; k <= grid_points[2] - 2; k += 1) {
+                xvel = us[i][j][k];
+                yvel = vs[i][j][k];
+                zvel = ws[i][j][k];
+                ac = speed[i][j][k];
+                acinv = ainv[i][j][k];
+                ac2u = ac * ac;
+                r1 = rhs[0][i][j][k];
+                r2 = rhs[1][i][j][k];
+                r3 = rhs[2][i][j][k];
+                r4 = rhs[3][i][j][k];
+                r5 = rhs[4][i][j][k];
+                uzik1 = u[0][i][j][k];
+                btuz = bt * uzik1;
+                t1 = btuz * acinv * (r4 + r5);
+                t2 = r3 + t1;
+                t3 = btuz * (r4 - r5);
+                rhs[0][i][j][k] = t2;
+                rhs[1][i][j][k] = -uzik1 * r2 + xvel * t2;
+                rhs[2][i][j][k] = uzik1 * r1 + yvel * t2;
+                rhs[3][i][j][k] = zvel * t2 + t3;
+                rhs[4][i][j][k] = uzik1 * (-xvel * r2 + yvel * r1) + qs[i][j][k] * t2 + c2iv * ac2u * t1 + zvel * t3;
+            }
+        }
+    }","#pragma omp parallel for private (t1,t2,t3,ac,xvel,yvel,zvel,r1,r2,r3,r4,r5,btuz,acinv,ac2u,uzik1,j,k)","#pragma omp parallel for private(j, k, xvel, yvel, zvel, ac, acinv, ac2u, r1, r2, r3, r4, r5, uzik1, btuz, t1, t2, t3)","#pragma omp parallel for private(j, k, xvel, yvel, zvel, ac, acinv, ac2u, r1, r2, r3, r4, r5, uzik1, btuz, t1, t2, t3)",5,5,semantic
+76,./Benchmark-Test-2/3/mg-25.ll,"			#pragma rose_outline
+          for (i1 = d1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - d1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - d1 - 1] + 0.5 * (z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }",2,2,"		
+          for (i1 = d1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - d1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - d1 - 1] + 0.5 * (z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }",,"#pragma omp parallel for
+          for (i1 = d1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - d1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - d1 - 1] + 0.5 * (z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }",none,none,#pragma omp parallel for,5,1,
+77,./Benchmark-Test-2/0/lu-55.ll,"//#pragma omp parallel for private (k)
+    #pragma rose_outline
+	for (k = 0; k <= 65; k += 1) {
+      phi1[i][k] = 0.0;
+      phi2[i][k] = 0.0;
+    }",0,0,"
+
+	for (k = 0; k <= 65; k += 1) {
+      phi1[i][k] = 0.0;
+      phi2[i][k] = 0.0;
+    }","#pragma omp parallel for private(k)
+	for (k = 0; k <= 65; k += 1) {
+      phi1[i][k] = 0.0;
+      phi2[i][k] = 0.0;
+    }","#pragma omp parallel for
+    for (k = 0; k <= 65; k += 1) {
+      phi1[i][k] = 0.0;
+      phi2[i][k] = 0.0;
+    }",#pragma omp parallel for private (k),#pragma omp parallel for private(k),#pragma omp parallel for,5,4,
+78,./Benchmark-Test-2/0/lu-54.ll,"//#pragma omp parallel for private (iglob,i,k)
+    #pragma rose_outline
+	for (i = ibeg; i <= ifin; i += 1) {
+      iglob = i;
+      
+//#pragma omp parallel for private (k)
+      #pragma rose_outline
+	  for (k = ki1; k <= ki2; k += 1) {
+        phi1[i][k] = 0.40e+00 * (u[i][jbeg][k][4] - 0.50 * (u[i][jbeg][k][1] * u[i][jbeg][k][1] + u[i][jbeg][k][2] * u[i][jbeg][k][2] + u[i][jbeg][k][3] * u[i][jbeg][k][3]) / u[i][jbeg][k][0]);
+      }
+    }",0,0,"
+
+	for (i = ibeg; i <= ifin; i += 1) {
+      iglob = i;
+      
+
+
+	  for (k = ki1; k <= ki2; k += 1) {
+        phi1[i][k] = 0.40e+00 * (u[i][jbeg][k][4] - 0.50 * (u[i][jbeg][k][1] * u[i][jbeg][k][1] + u[i][jbeg][k][2] * u[i][jbeg][k][2] + u[i][jbeg][k][3] * u[i][jbeg][k][3]) / u[i][jbeg][k][0]);
+      }
+    }","#pragma omp parallel for private(i, k, iglob)
+	for (i = ibeg; i <= ifin; i += 1) {
+      iglob = i;
+
+	  #pragma omp parallel for private(k)
+	  for (k = ki1; k <= ki2; k += 1) {
+        phi1[i][k] = 0.40e+00 * (u[i][jbeg][k][4] - 0.50 * (u[i][jbeg][k][1] * u[i][jbeg][k][1] + u[i][jbeg][k][2] * u[i][jbeg][k][2] + u[i][jbeg][k][3] * u[i][jbeg][k][3]) / u[i][jbeg][k][0]);
+      }
+    }","#pragma omp parallel for
+    for (i = ibeg; i <= ifin; i += 1) {
+      iglob = i;
+      
+      for (k = ki1; k <= ki2; k += 1) {
+        phi1[i][k] = 0.40e+00 * (u[i][jbeg][k][4] - 0.50 * (u[i][jbeg][k][1] * u[i][jbeg][k][1] + u[i][jbeg][k][2] * u[i][jbeg][k][2] + u[i][jbeg][k][3] * u[i][jbeg][k][3]) / u[i][jbeg][k][0]);
+      }
+    }","#pragma omp parallel for private (iglob,i,k)","#pragma omp parallel for private(i, k, iglob)","#pragma omp parallel for private(i, k, iglob)",5,5,semantic
+79,./Benchmark-Test-2/3/mg-27.ll,"	  #pragma rose_outline
+      for (i3 = 1; i3 <= mm3 - 1; i3 += 1) {
+		  #pragma rose_outline
+        for (i2 = d2; i2 <= mm2 - 1; i2 += 1) {
+			#pragma rose_outline
+          for (i1 = d1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - d1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - d1 - 1] + 0.5 * (z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }
+		  #pragma rose_outline
+          for (i1 = 1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - t1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - t1 - 1] + 0.25 * (z[i3][i2 - 1][i1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2 - 1][i1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }
+        }
+		#pragma rose_outline
+        for (i2 = 1; i2 <= mm2 - 1; i2 += 1) {
+			#pragma rose_outline
+          for (i1 = d1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] + 0.25 * (z[i3][i2][i1 - 1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }
+		  #pragma rose_outline
+          for (i1 = 1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - t1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - t1 - 1] + 0.125 * (z[i3][i2][i1] + z[i3][i2 - 1][i1] + z[i3][i2][i1 - 1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2][i1] + z[i3 - 1][i2 - 1][i1] + z[i3 - 1][i2][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }
+        }
+      }",2,2,"
+      for (i3 = 1; i3 <= mm3 - 1; i3 += 1) {
+		 
+        for (i2 = d2; i2 <= mm2 - 1; i2 += 1) {
+			
+          for (i1 = d1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - d1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - d1 - 1] + 0.5 * (z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }
+		
+          for (i1 = 1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - t1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - t1 - 1] + 0.25 * (z[i3][i2 - 1][i1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2 - 1][i1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }
+        }
+		
+        for (i2 = 1; i2 <= mm2 - 1; i2 += 1) {
+			
+          for (i1 = d1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] + 0.25 * (z[i3][i2][i1 - 1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }
+		
+          for (i1 = 1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - t1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - t1 - 1] + 0.125 * (z[i3][i2][i1] + z[i3][i2 - 1][i1] + z[i3][i2][i1 - 1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2][i1] + z[i3 - 1][i2 - 1][i1] + z[i3 - 1][i2][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+          }
+        }
+      }",,"#include <omp.h>
+
+for (i3 = 1; i3 <= mm3 - 1; i3 += 1) {
+    #pragma omp parallel for private(i2, i1) shared(u, z)
+    for (i2 = d2; i2 <= mm2 - 1; i2 += 1) {
+        for (i1 = d1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - d1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - d1 - 1] + 0.5 * (z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+        }
+        
+        for (i1 = 1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - t1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - d2 - 1][2 * i1 - t1 - 1] + 0.25 * (z[i3][i2 - 1][i1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2 - 1][i1] + z[i3 - 1][i2 - 1][i1 - 1]);
+        }
+    }
+    
+    #pragma omp parallel for private(i2, i1) shared(u, z)
+    for (i2 = 1; i2 <= mm2 - 1; i2 += 1) {
+        for (i1 = d1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - d1 - 1] + 0.25 * (z[i3][i2][i1 - 1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+        }
+        
+        for (i1 = 1; i1 <= mm1 - 1; i1 += 1) {
+            u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - t1 - 1] = u[2 * i3 - t3 - 1][2 * i2 - t2 - 1][2 * i1 - t1 - 1] + 0.125 * (z[i3][i2][i1] + z[i3][i2 - 1][i1] + z[i3][i2][i1 - 1] + z[i3][i2 - 1][i1 - 1] + z[i3 - 1][i2][i1] + z[i3 - 1][i2 - 1][i1] + z[i3 - 1][i2][i1 - 1] + z[i3 - 1][i2 - 1][i1 - 1]);
+        }
+    }
+}",none,none,#pragma omp parallel for collapse(3),5,1,
+80,./Benchmark-Test-2/3/cg-8.ll,"  #pragma rose_outline
+  for (nza = 1; nza <= nnza; nza += 1) {
+    j = arow[nza] - firstrow + 1 + 1;
+    rowstr[j] = rowstr[j] + 1;
+  }",2,2,"
+  for (nza = 1; nza <= nnza; nza += 1) {
+    j = arow[nza] - firstrow + 1 + 1;
+    rowstr[j] = rowstr[j] + 1;
+  }",,"#pragma omp parallel for
+  for (nza = 1; nza <= nnza; nza += 1) {
+    j = arow[nza] - firstrow + 1 + 1;
+    rowstr[j] = rowstr[j] + 1;
+  }",none,none,#pragma omp parallel for private(j),5,0,
+81,./Benchmark-Test-2/3/sp-108.ll,"//#pragma omp parallel for private (i,j,k,m)
+     #pragma rose_outline 
+	for (m = 0; m <= 4; m += 1) {
+      
+//#pragma omp parallel for private (i,j,k)
+       #pragma rose_outline 
+	  for (i = 0; i <= grid_points[0] - 1; i += 1) {
+        
+//#pragma omp parallel for private (j,k)
+         #pragma rose_outline 
+		for (j = 0; j <= grid_points[1] - 1; j += 1) {
+          
+//#pragma omp parallel for private (k)
+           #pragma rose_outline 
+		  for (k = 0; k <= grid_points[2] - 1; k += 1) {
+            rhs[m][i][j][k] = forcing[m][i][j][k];
+          }
+        }
+      }
+    }",0,0,"
+
+	for (m = 0; m <= 4; m += 1) {
+      
+	  for (i = 0; i <= grid_points[0] - 1; i += 1) {
+        
+		for (j = 0; j <= grid_points[1] - 1; j += 1) {
+          
+		  for (k = 0; k <= grid_points[2] - 1; k += 1) {
+            rhs[m][i][j][k] = forcing[m][i][j][k];
+          }
+        }
+      }
+    }","#pragma omp parallel for private(m,i,j,k)
+	for (m = 0; m <= 4; m += 1) {
+      
+	  for (i = 0; i <= grid_points[0] - 1; i += 1) {
+        
+		for (j = 0; j <= grid_points[1] - 1; j += 1) {
+          
+		  for (k = 0; k <= grid_points[2] - 1; k += 1) {
+            rhs[m][i][j][k] = forcing[m][i][j][k];
+          }
+        }
+      }
+    }","#pragma omp parallel for private(m, i, j, k)
+    for (m = 0; m <= 4; m += 1) {
+      
+      for (i = 0; i <= grid_points[0] - 1; i += 1) {
+        
+        for (j = 0; j <= grid_points[1] - 1; j += 1) {
+          
+          for (k = 0; k <= grid_points[2] - 1; k += 1) {
+            rhs[m][i][j][k] = forcing[m][i][j][k];
+          }
+        }
+      }
+    }","#pragma omp parallel for private (i,j,k,m)","#pragma omp parallel for private(m,i,j,k)",#pragma omp parallel for collapse(4),5,1,semantic
+82,./Benchmark-Test-2/0/sp-31.ll,"//#pragma omp parallel for private (fac1,fac2,i,k,m)
+     #pragma rose_outline 
+	for (i = 1; i <= grid_points[0] - 2; i += 1) {
+      
+#pragma omp parallel for private (fac1,fac2,k,m) firstprivate (j,n,j1)
+      for (k = 1; k <= grid_points[2] - 2; k += 1) {
+        fac1 = 1. / lhs[n + 2][i][j][k];
+        lhs[n + 3][i][j][k] = fac1 * lhs[n + 3][i][j][k];
+        lhs[n + 4][i][j][k] = fac1 * lhs[n + 4][i][j][k];
+        
+#pragma omp parallel for private (m) firstprivate (fac1)
+        for (m = 0; m <= 2; m += 1) {
+          rhs[m][i][j][k] = fac1 * rhs[m][i][j][k];
+        }
+        lhs[n + 2][i][j1][k] = lhs[n + 2][i][j1][k] - lhs[n + 1][i][j1][k] * lhs[n + 3][i][j][k];
+        lhs[n + 3][i][j1][k] = lhs[n + 3][i][j1][k] - lhs[n + 1][i][j1][k] * lhs[n + 4][i][j][k];
+        
+//#pragma omp parallel for private (m)
+         #pragma rose_outline 
+		for (m = 0; m <= 2; m += 1) {
+          rhs[m][i][j1][k] = rhs[m][i][j1][k] - lhs[n + 1][i][j1][k] * rhs[m][i][j][k];
+        }
+/*--------------------------------------------------------------------
+c            scale the last row immediately 
+--------------------------------------------------------------------*/
+        fac2 = 1. / lhs[n + 2][i][j1][k];
+        
+#pragma omp parallel for private (m) firstprivate (fac2)
+        for (m = 0; m <= 2; m += 1) {
+          rhs[m][i][j1][k] = fac2 * rhs[m][i][j1][k];
+        }
+      }
+    }",0,0,"
+	for (i = 1; i <= grid_points[0] - 2; i += 1) {
+      
+
+      for (k = 1; k <= grid_points[2] - 2; k += 1) {
+        fac1 = 1. / lhs[n + 2][i][j][k];
+        lhs[n + 3][i][j][k] = fac1 * lhs[n + 3][i][j][k];
+        lhs[n + 4][i][j][k] = fac1 * lhs[n + 4][i][j][k];
+        
+
+        for (m = 0; m <= 2; m += 1) {
+          rhs[m][i][j][k] = fac1 * rhs[m][i][j][k];
+        }
+        lhs[n + 2][i][j1][k] = lhs[n + 2][i][j1][k] - lhs[n + 1][i][j1][k] * lhs[n + 3][i][j][k];
+        lhs[n + 3][i][j1][k] = lhs[n + 3][i][j1][k] - lhs[n + 1][i][j1][k] * lhs[n + 4][i][j][k];
+        
+		for (m = 0; m <= 2; m += 1) {
+          rhs[m][i][j1][k] = rhs[m][i][j1][k] - lhs[n + 1][i][j1][k] * rhs[m][i][j][k];
+        }
+/*--------------------------------------------------------------------
+c            scale the last row immediately 
+--------------------------------------------------------------------*/
+        fac2 = 1. / lhs[n + 2][i][j1][k];
+        
+
+        for (m = 0; m <= 2; m += 1) {
+          rhs[m][i][j1][k] = fac2 * rhs[m][i][j1][k];
+        }
+      }
+    }","#pragma omp parallel for private(i, k, m, fac1, fac2)
+	for (i = 1; i <= grid_points[0] - 2; i += 1) {
+      
+      for (k = 1; k <= grid_points[2] - 2; k += 1) {
+        fac1 = 1. / lhs[n + 2][i][j][k];
+        lhs[n + 3][i][j][k] = fac1 * lhs[n + 3][i][j][k];
+        lhs[n + 4][i][j][k] = fac1 * lhs[n + 4][i][j][k];
+        
+        #pragma omp parallel for private(m)
+        for (m = 0; m <= 2; m += 1) {
+          rhs[m][i][j][k] = fac1 * rhs[m][i][j][k];
+        }
+        lhs[n + 2][i][j1][k] = lhs[n + 2][i][j1][k] - lhs[n + 1][i][j1][k] * lhs[n + 3][i][j][k];
+        lhs[n + 3][i][j1][k] = lhs[n + 3][i][j1][k] - lhs[n + 1][i][j1][k] * lhs[n + 4][i][j][k];
+        
+		#pragma omp parallel for private(m)
+		for (m = 0; m <= 2; m += 1) {
+          rhs[m][i][j1][k] = rhs[m][i][j1][k] - lhs[n + 1][i][j1][k] * rhs[m][i][j][k];
+        }
+ 
+        fac2 = 1. / lhs[n + 2][i][j1][k];
+        
+        #pragma omp parallel for private(m)
+        for (m = 0; m <= 2; m += 1) {
+          rhs[m][i][j1][k] = fac2 * rhs[m][i][j1][k];
+        }
+      }
+    }","#pragma omp parallel for private(i, k, m, fac1, fac2)
+    for (i = 1; i <= grid_points[0] - 2; i += 1) {
+      for (k = 1; k <= grid_points[2] - 2; k += 1) {
+        fac1 = 1. / lhs[n + 2][i][j][k];
+        lhs[n + 3][i][j][k] = fac1 * lhs[n + 3][i][j][k];
+        lhs[n + 4][i][j][k] = fac1 * lhs[n + 4][i][j][k];
+        
+        #pragma omp parallel for private(m)
+        for (m = 0; m <= 2; m += 1) {
+          rhs[m][i][j][k] = fac1 * rhs[m][i][j][k];
+        }
+        lhs[n + 2][i][j1][k] = lhs[n + 2][i][j1][k] - lhs[n + 1][i][j1][k] * lhs[n + 3][i][j][k];
+        lhs[n + 3][i][j1][k] = lhs[n + 3][i][j1][k] - lhs[n + 1][i][j1][k] * lhs[n + 4][i][j][k];
+        
+        #pragma omp parallel for private(m)
+        for (m = 0; m <= 2; m += 1) {
+          rhs[m][i][j1][k] = rhs[m][i][j1][k] - lhs[n + 1][i][j1][k] * rhs[m][i][j][k];
+        }
+ 
+        fac2 = 1. / lhs[n + 2][i][j1][k];
+        
+        #pragma omp parallel for private(m)
+        for (m = 0; m <= 2; m += 1) {
+          rhs[m][i][j1][k] = fac2 * rhs[m][i][j1][k];
+        }
+      }
+    }","#pragma omp parallel for private (fac1,fac2,i,k,m)","#pragma omp parallel for private(i, k, m, fac1, fac2)","#pragma omp parallel for private(i, k, m, fac1, fac2)",5,5,
+83,./Benchmark-Test-2/0/sp-113.ll,"//#pragma omp parallel for private (r1,r2,r3,r4,r5,t1,t2,i,j,k)
+   #pragma rose_outline 
+  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+    
+//#pragma omp parallel for private (r1,r2,r3,r4,r5,t1,t2,j,k)
+     #pragma rose_outline 
+	for (j = 1; j <= grid_points[1] - 2; j += 1) {
+      
+#pragma omp parallel for private (r1,r2,r3,r4,r5,t1,t2,k) firstprivate (bt)
+      for (k = 1; k <= grid_points[2] - 2; k += 1) {
+        r1 = rhs[0][i][j][k];
+        r2 = rhs[1][i][j][k];
+        r3 = rhs[2][i][j][k];
+        r4 = rhs[3][i][j][k];
+        r5 = rhs[4][i][j][k];
+        t1 = bt * r1;
+        t2 = 0.5 * (r4 + r5);
+        rhs[0][i][j][k] = bt * (r4 - r5);
+        rhs[1][i][j][k] = -r3;
+        rhs[2][i][j][k] = r2;
+        rhs[3][i][j][k] = -t1 + t2;
+        rhs[4][i][j][k] = t1 + t2;
+      }
+    }
+  }",0,0,"
+
+  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+    
+	for (j = 1; j <= grid_points[1] - 2; j += 1) {
+      
+
+      for (k = 1; k <= grid_points[2] - 2; k += 1) {
+        r1 = rhs[0][i][j][k];
+        r2 = rhs[1][i][j][k];
+        r3 = rhs[2][i][j][k];
+        r4 = rhs[3][i][j][k];
+        r5 = rhs[4][i][j][k];
+        t1 = bt * r1;
+        t2 = 0.5 * (r4 + r5);
+        rhs[0][i][j][k] = bt * (r4 - r5);
+        rhs[1][i][j][k] = -r3;
+        rhs[2][i][j][k] = r2;
+        rhs[3][i][j][k] = -t1 + t2;
+        rhs[4][i][j][k] = t1 + t2;
+      }
+    }
+  }","#pragma omp parallel for private(i, j, k, r1, r2, r3, r4, r5, t1, t2)
+  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+    
+	for (j = 1; j <= grid_points[1] - 2; j += 1) {
+      
+      for (k = 1; k <= grid_points[2] - 2; k += 1) {
+        r1 = rhs[0][i][j][k];
+        r2 = rhs[1][i][j][k];
+        r3 = rhs[2][i][j][k];
+        r4 = rhs[3][i][j][k];
+        r5 = rhs[4][i][j][k];
+        t1 = bt * r1;
+        t2 = 0.5 * (r4 + r5);
+        rhs[0][i][j][k] = bt * (r4 - r5);
+        rhs[1][i][j][k] = -r3;
+        rhs[2][i][j][k] = r2;
+        rhs[3][i][j][k] = -t1 + t2;
+        rhs[4][i][j][k] = t1 + t2;
+      }
+    }
+  }","#pragma omp parallel for private(i, j, k, r1, r2, r3, r4, r5, t1, t2)
+  for (i = 1; i <= grid_points[0] - 2; i += 1) {
+    for (j = 1; j <= grid_points[1] - 2; j += 1) {
+      for (k = 1; k <= grid_points[2] - 2; k += 1) {
+        r1 = rhs[0][i][j][k];
+        r2 = rhs[1][i][j][k];
+        r3 = rhs[2][i][j][k];
+        r4 = rhs[3][i][j][k];
+        r5 = rhs[4][i][j][k];
+        t1 = bt * r1;
+        t2 = 0.5 * (r4 + r5);
+        rhs[0][i][j][k] = bt * (r4 - r5);
+        rhs[1][i][j][k] = -r3;
+        rhs[2][i][j][k] = r2;
+        rhs[3][i][j][k] = -t1 + t2;
+        rhs[4][i][j][k] = t1 + t2;
+      }
+    }
+  }","#pragma omp parallel for private (r1,r2,r3,r4,r5,t1,t2,i,j,k)","#pragma omp parallel for private(i, j, k, r1, r2, r3, r4, r5, t1, t2)","#pragma omp parallel for collapse(3) private(i, j, k, r1, r2, r3, r4, r5, t1, t2)",5,4,
+84,./Benchmark-Test-2/3/mg-15.ll,"  #pragma rose_outline
+  for (i3 = 1; i3 <= e3 - 1; i3 += 1) {
+    x1 = x0;
+	#pragma rose_outline
+    for (i2 = 1; i2 <= e2 - 1; i2 += 1) {
+      xx = x1;
+      vranlc(d1,&xx,(pow(5.0,13)),&z[i3][i2][0]);
+      rdummy = randlc(&x1,a1);
+    }
+    rdummy = randlc(&x0,a2);
+  }",2,2,"
+  for (i3 = 1; i3 <= e3 - 1; i3 += 1) {
+    x1 = x0;
+
+    for (i2 = 1; i2 <= e2 - 1; i2 += 1) {
+      xx = x1;
+      vranlc(d1,&xx,(pow(5.0,13)),&z[i3][i2][0]);
+      rdummy = randlc(&x1,a1);
+    }
+    rdummy = randlc(&x0,a2);
+  }",,"#pragma omp parallel for private(i3, i2, x1, xx, rdummy) 
+  for (i3 = 1; i3 <= e3 - 1; i3 += 1) {
+    x1 = x0;
+
+    for (i2 = 1; i2 <= e2 - 1; i2 += 1) {
+      xx = x1;
+      vranlc(d1,&xx,(pow(5.0,13)),&z[i3][i2][0]);
+      rdummy = randlc(&x1,a1);
+    }
+    rdummy = randlc(&x0,a2);
+  }",none,none,"#pragma omp parallel for private(i2, x1, xx, rdummy)",5,0,
+85,./Benchmark-Test-2/0/sp-97.ll,"//#pragma omp parallel for private (i,j,k)
+ #pragma rose_outline   
+  for (i = 3 * 1; i <= grid_points[0] - 3 - 1; i += 1) {
+        
+//#pragma omp parallel for private (j,k)
+         #pragma rose_outline 
+		for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          
+#pragma omp parallel for private (k) firstprivate (dssp)
+          for (k = 1; k <= grid_points[2] - 2; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i - 2][j][k] - 4.0 * u[m][i - 1][j][k] + 6.0 * u[m][i][j][k] - 4.0 * u[m][i + 1][j][k] + u[m][i + 2][j][k]);
+          }
+        }
+      }",0,0,"
+
+  for (i = 3 * 1; i <= grid_points[0] - 3 - 1; i += 1) {
+        
+		for (j = 1; j <= grid_points[1] - 2; j += 1) {
+          
+          for (k = 1; k <= grid_points[2] - 2; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i - 2][j][k] - 4.0 * u[m][i - 1][j][k] + 6.0 * u[m][i][j][k] - 4.0 * u[m][i + 1][j][k] + u[m][i + 2][j][k]);
+          }
+        }
+      }","#pragma omp parallel for private(i,j,k)
+for (i = 3 * 1; i <= grid_points[0] - 3 - 1; i += 1) {
+    for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        for (k = 1; k <= grid_points[2] - 2; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i - 2][j][k] - 4.0 * u[m][i - 1][j][k] + 6.0 * u[m][i][j][k] - 4.0 * u[m][i + 1][j][k] + u[m][i + 2][j][k]);
+        }
+    }
+}","#pragma omp parallel for private(i, j, k) collapse(3)
+for (i = 3 * 1; i <= grid_points[0] - 3 - 1; i += 1) {
+    for (j = 1; j <= grid_points[1] - 2; j += 1) {
+        for (k = 1; k <= grid_points[2] - 2; k += 1) {
+            rhs[m][i][j][k] = rhs[m][i][j][k] - dssp * (u[m][i - 2][j][k] - 4.0 * u[m][i - 1][j][k] + 6.0 * u[m][i][j][k] - 4.0 * u[m][i + 1][j][k] + u[m][i + 2][j][k]);
+        }
+    }
+}","#pragma omp parallel for private (i,j,k)","#pragma omp parallel for private(i,j,k)",#pragma omp parallel for collapse(3),5,2,
+86,./Benchmark-Test-2/3/sp-55.ll,"   #pragma rose_outline 
+  for (m = 0; m <= 4; m += 1) {
+    if (( *class) == 'U') {
+      printf(""          %2d%20.13e\n"",m,xce[m]);
+    }
+     else if (xcedif[m] > epsilon) {
+       *verified = 0;
+      printf("" FAILURE: %2d%20.13e%20.13e%20.13e\n"",m,xce[m],xceref[m],xcedif[m]);
+    }
+     else {
+      printf(""          %2d%20.13e%20.13e%20.13e\n"",m,xce[m],xceref[m],xcedif[m]);
+    }
+  }",2,2,"
+  for (m = 0; m <= 4; m += 1) {
+    if (( *class) == 'U') {
+      printf(""          %2d%20.13e\n"",m,xce[m]);
+    }
+     else if (xcedif[m] > epsilon) {
+       *verified = 0;
+      printf("" FAILURE: %2d%20.13e%20.13e%20.13e\n"",m,xce[m],xceref[m],xcedif[m]);
+    }
+     else {
+      printf(""          %2d%20.13e%20.13e%20.13e\n"",m,xce[m],xceref[m],xcedif[m]);
+    }
+  }",,"#pragma omp parallel for
+  for (m = 0; m <= 4; m += 1) {
+    if ((*class) == 'U') {
+      printf(""          %2d%20.13e\n"", m, xce[m]);
+    }
+    else if (xcedif[m] > epsilon) {
+      *verified = 0;
+      printf("" FAILURE: %2d%20.13e%20.13e%20.13e\n"", m, xce[m], xceref[m], xcedif[m]);
+    }
+    else {
+      printf(""          %2d%20.13e%20.13e%20.13e\n"", m, xce[m], xceref[m], xcedif[m]);
+    }
+  }",none,none,none,5,5,
+87,./Benchmark-Test-2/3/ft-2.ll,"	 #pragma rose_outline
+    for (i = 1; i <= nt; i += 1) {
+      err = (sums[i] . real - vdata_real_b[i]) / vdata_real_b[i];
+      if (fabs(err) > epsilon) {
+         *verified = 0;
+        break; 
+      }
+      err = (sums[i] . imag - vdata_imag_b[i]) / vdata_imag_b[i];
+      if (fabs(err) > epsilon) {
+         *verified = 0;
+        break; 
+      }
+    }",2,2,"
+    for (i = 1; i <= nt; i += 1) {
+      err = (sums[i] . real - vdata_real_b[i]) / vdata_real_b[i];
+      if (fabs(err) > epsilon) {
+         *verified = 0;
+        break; 
+      }
+      err = (sums[i] . imag - vdata_imag_b[i]) / vdata_imag_b[i];
+      if (fabs(err) > epsilon) {
+         *verified = 0;
+        break; 
+      }
+    }",,"#pragma omp parallel for
+    for (i = 1; i <= nt; i += 1) {
+      err = (sums[i] . real - vdata_real_b[i]) / vdata_real_b[i];
+      if (fabs(err) > epsilon) {
+         *verified = 0;
+        break; 
+      }
+      err = (sums[i] . imag - vdata_imag_b[i]) / vdata_imag_b[i];
+      if (fabs(err) > epsilon) {
+         *verified = 0;
+        break; 
+      }
+    }",none,none,"#pragma omp parallel for shared(sums, vdata_real_b, vdata_imag_b, verified)",5,0,
+88,./Benchmark-Test-2/0/mg-67.ll,"//#pragma omp parallel for private (i)
+    #pragma rose_outline
+	for (i = 0; i <= 7; i += 1) {
+      debug_vec[i] = 0;
+    }",0,0,"
+
+	for (i = 0; i <= 7; i += 1) {
+      debug_vec[i] = 0;
+    }","#pragma omp parallel for private(i)
+    for (i = 0; i <= 7; i += 1) {
+      debug_vec[i] = 0;
+    }","#pragma omp parallel for
+    for (i = 0; i <= 7; i += 1) {
+      debug_vec[i] = 0;
+    }",#pragma omp parallel for private (i),#pragma omp parallel for private(i),#pragma omp parallel for,5,4,
+89,./Benchmark-Test-2/0/sp-121.ll,"//#pragma omp parallel for private (j,k)
+ #pragma rose_outline 
+      for (j = 0; j <= grid_points[1] - 1; j += 1) {
+        
+//#pragma omp parallel for private (k)
+ #pragma rose_outline 
+        for (k = 0; k <= grid_points[2] - 1; k += 1) {
+          lhs[n][i][j][k] = 0.0;
+        }
+      }",0,0,"
+
+      for (j = 0; j <= grid_points[1] - 1; j += 1) {
+                for (k = 0; k <= grid_points[2] - 1; k += 1) {
+          lhs[n][i][j][k] = 0.0;
+        }
+      }","#pragma omp parallel for private(j,k)
+      for (j = 0; j <= grid_points[1] - 1; j += 1) {
+                for (k = 0; k <= grid_points[2] - 1; k += 1) {
+          lhs[n][i][j][k] = 0.0;
+        }
+      }","#pragma omp parallel for private(j, k)
+      for (i = 0; i <= grid_points[0] - 1; i += 1) {
+        for (j = 0; j <= grid_points[1] - 1; j += 1) {
+          for (k = 0; k <= grid_points[2] - 1; k += 1) {
+            lhs[n][i][j][k] = 0.0;
+          }
+        }
+      }","#pragma omp parallel for private (j,k)","#pragma omp parallel for private(j,k)",#pragma omp parallel for collapse(2),5,3,

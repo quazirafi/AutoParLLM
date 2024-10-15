@@ -1,0 +1,17 @@
+dataset_name: ./dgl-csv-benchmark-test-2
+edge_data:
+- file_name: edges_0.csv
+  etype: [control, control, control]
+- file_name: edges_1.csv
+  etype: [control, call, control]
+- file_name: edges_2.csv
+  etype: [control, data, variable]
+- file_name: edges_3.csv
+  etype: [variable, data, control]
+node_data:
+- file_name: nodes_0.csv
+  ntype: control
+- file_name: nodes_1.csv
+  ntype: variable
+graph_data:
+  file_name: graphs.csv

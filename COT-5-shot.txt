@@ -1,0 +1,50 @@
+Qs: Parallelize the following code using OpenMP
+for (int i = 0; i < n; ++i) {
+arr[i] = arr[i-1] + arr[i+1];
+}
+Ans.
+1. The loop contains inter-iteration dependencies at i-1 and i+1.
+2. Hence loop can not be parallelized.
+
+Qs: Parallelize the following code using OpenMP
+for (int i = 0; i < n; ++i) {
+sum += arr[i];
+}
+Ans.
+1. The following code combines multiple iterations into a final outcome 'sum'
+2. Hence adding reduction clause is necessary to parallelize
+3. reduction should be added on 'sum' with '+' operator.
+Qs: Parallelize the following code using OpenMP
+for (int i = 0; i < n; ++i) {
+arr[i] = i + 1;
+}
+Ans:
+1. The code contains do-all pattern as all iterations are independent as no need to make any 2. variable private to each thread.
+2. Simply adding the 'parallel for' clause should be sufficient.
+Qs:
+for (int i = 0; i < n; i++) {
+        temp = array[i] * 2;  
+        result[i] = temp;
+    }
+Ans:
+1. The code contains do-all pattern as all iterations are independent
+2. But variable 'temp' needs to be private to each thread.
+3. private clause should be added on 'temp'.
+Qs:
+for (int i = 0; i < n; i++) {
+        temp = array[i] * 2;  
+        sum += temp;
+    }
+Ans:
+1. The code contains do-all pattern as all iterations are independent
+2. But variable 'temp' needs to be private to each thread.
+3. private clause should be added on 'temp'.
+4. The following code combines multiple iterations into a final outcome 'sum'
+5. Hence adding reduction clause is necessary to parallelize
+6. reduction should be added on 'sum' with '+' operator.
+
+Now Parallelize the following code using OpenMP:
+for (int i = 0; i < n; ++i) {
+Tq_143 = 120 * Tq_143;
+yy_17 = 15 * yy_17;
+}
