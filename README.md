@@ -17,34 +17,11 @@ Then activate the virtual environment using following command.
 
 source venv2/bin/activate
 
-# To run the test do the following 
+# To run the test on the Rodinia Benchmark do the following 
 
 i. pip install -r requirements.txt  
 
 ii. python3 main.py
-
-
-It will show an output like this showing the summary of the results for the 15 loops in Rodinia Benchmark. It can be seen that all 15 loops are correctly predicted by the model. Also, there is a confusion matrix printed at the last which verfies the results in the table. It shows that all privates are detected as privates and all reductions are detected as reductions.
-
-
-Num of correct predictions:  15  
-
-
-|                   | precision|   recall | f1-score |  support|
-|-------------------|----------|----------|----------|---------|
-|  Private Clause   |     1.00 |    1.00  |   1.00   |    12   |
-|  Reduction Clause |     1.00 |    1.00  |   1.00   |     3   |
-|        accuracy   |          |          |   1.00   |    15   |
-|       macro avg   |     1.00 |    1.00  |   1.00   |    15   | 
-|    weighted avg   |     1.00 |    1.00  |   1.00   |    15   | 
-
-
-Confusion Matrix  
-
-|  		   |Private |  Reduction |
-|------------------|--------|------------|
-|  	Private	   |	12  |       0    |
-|  	Reduction  |	0   |       3    |
 
 
 # To train from scratch
