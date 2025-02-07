@@ -1,6 +1,7 @@
-# Project-A
+# AutoParLLM
 
-This repository contains the results for the Rodinia Benchmark Test. 
+This repository contains the code and dataset for the NAACL 2025 main conference paper "AutoParLLM: GNN-guided Context Generation for Zero-Shot Code
+Parallelization using LLMs". 
 
 
 # Creating Virtual Environment  
