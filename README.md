@@ -25,10 +25,4 @@ i. pip install -r requirements.txt
 ii. python3 main.py
 
 
-# To train from scratch
-
-i. pip install -r requirements.txt  
-
-ii. python3 base.py
-
-The previous one uses a pre-trained model to generate results on Rodinia. But this base.py will train the model from scratch and will generate the results for NAS Parallel Benchmark. dgl-csv-benchmark-test-2 contains the PerfoGraph representation of the loops. The base.py uses these loops for training the GNN model.
+# To train from scratch [[Coming Soon]]
