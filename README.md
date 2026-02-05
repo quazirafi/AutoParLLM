@@ -25,4 +25,8 @@ i. pip install -r requirements.txt
 ii. python3 main.py
 
 
-# To train from scratch [[Coming Soon]]
+# To train from scratch
+
+i. pip install -r requirements.txt  
+
+ii. python3 base.py
